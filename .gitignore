@@ -1,0 +1,4 @@
+venv/
+tlsanalyzer/results.json
+.DS_Store
+.idea/
