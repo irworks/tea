@@ -14,7 +14,7 @@ class Collector:
             raise FileNotFoundError
 
         logging.info(f'Start collecting files from {self.work_dir}')
-        for filename in os.listdir(f'{self.work_dir}/.'):
+        for filename in os.listdir(self.work_dir):
             if not filename.endswith('.ipa'):
                 continue
 
