@@ -18,7 +18,6 @@ class InfoPlistAnalyzer:
             'build': '',
             'sdk': '',
             'min_os': '',
-            'permissions': {},
             'ats': []
         }
 

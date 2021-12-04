@@ -56,13 +56,32 @@ def check_transport_security(p_list):
                     'to domains listed in NSExceptionDomains.'),
             })
 
+        if ats_dict and ats_dict.get('NSPinnedDomains'):
+            domains = ats_dict.get('NSPinnedDomains')
+            findings = {
+                'issue': 'NSPinnedDomains is enabled',
+                'status': 'secure',
+                'description': (
+                    'NSPinnedDomains enables certificate '
+                    'pinning for configured domains. '
+                    'This increases security by detecting '
+                    'MITM proxys with trusted root CA certificates. '
+                    'This key is available since '
+                    'iOS 14.0+, iPadOS 14.0+, macOS 11.0+. '
+                    'This key is optional. The default is not defined.'
+                ),
+                'domains': list(domains.keys()),
+            }
+            ats.append(findings)
+
         # NS Domain Exceptions
         if ats_dict and ats_dict.get('NSExceptionDomains'):
             exception_domains = ats_dict.get('NSExceptionDomains')
             ats.append({
                 'issue': 'NSExceptionDomains',
                 'status': 'info',
-                'description': ', '.join(exception_domains.keys()),
+                'description': 'Custom App Transport Security configurations for named domains.',
+                'domains': list(exception_domains.keys()),
             })
             for domain, config in exception_domains.items():
                 if not isinstance(config, dict):

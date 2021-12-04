@@ -63,12 +63,11 @@ class UrlExtractor:
                                     'Assets.car')):
                     continue
                 else:
-                    # logging.info(f'Checking {file}')
+                    # logging.debug(f'Checking {file}')
                     full_path = os.path.join(self.target_dir, file)
                     if os.path.isdir(full_path):
                         continue
 
-                    dat = ''
                     with io.open(full_path,
                                  mode='r',
                                  encoding='utf8',
