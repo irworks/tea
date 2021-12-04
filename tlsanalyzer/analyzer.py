@@ -3,6 +3,7 @@ import os.path
 
 from tlsanalyzer.extractor import Extractor
 from tlsanalyzer.modules.info_plist_analyzer import InfoPlistAnalyzer
+from tlsanalyzer.modules.url_extractor import UrlExtractor
 
 
 class Analyzer:
@@ -23,6 +24,12 @@ class Analyzer:
         logging.info(f'Starting to analyze {self.ipa_file}...')
         self.info_plist_results = self.analyze_info_plist(app_path)
 
+        urls = self.extract_urls(app_path)
+        self.info_plist_results['urls'] = urls
+
+    '''
+    Extract app base information and ATS rules from Info.plist
+    '''
     def analyze_info_plist(self, app_path):
         info_plist_path = os.path.join(app_path, 'Info.plist')
         if not os.path.isfile(info_plist_path):
@@ -31,6 +38,16 @@ class Analyzer:
 
         analyzer = InfoPlistAnalyzer(info_plist_path)
         return analyzer.analyze()
+
+    '''
+    Extract all URLs which can be found in the binary and 
+    companion files, filter out not interesting ones.
+    '''
+    def extract_urls(self, app_path, force=False):
+        url_extractor = UrlExtractor(app_path)
+        urls = url_extractor.find_urls(force)
+        logging.info(f'Found {len(urls)} urls')
+        return urls
 
     def ats_exceptions(self):
         return self.info_plist_results['ats']
