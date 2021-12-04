@@ -32,10 +32,15 @@ class UrlExtractor:
             'http://goo.gl/426NGa',
             'https://goo.gl/YNbdK2',
             'http://goo.gl/9vSsPb',
+            'https://goo.gl/ctyzm8.',
             'https://goo.gl/ctyzm8',
             'http://goo.gl/RfcP7r)',
+            'https://google.com/dfp.',
             'http://cordova.apache.org/ns/1.0',
-            'https://badad.googleplex.com/s/reportAd'
+            'https://badad.googleplex.com/s/reportAd',
+
+            # Facebook
+            'www.facebook.com'
         }
 
     def find_urls(self, force=False):
@@ -101,6 +106,7 @@ class UrlExtractor:
             if url not in urls \
                     and 'DTDs/PropertyList-1.0.dtd' not in url\
                     and 'w3.org' not in url\
+                    and not url.endswith('/LICENSE')\
                     and url not in self.excluded_urls:
                 urls.append(url)
 
