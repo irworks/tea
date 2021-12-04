@@ -8,10 +8,12 @@ from tlsanalyzer.modules.url_extractor import UrlExtractor
 
 class Analyzer:
 
-    def __init__(self, work_dir, ipa_file, rescan_urls):
+    def __init__(self, work_dir, ipa_file, rescan_urls, num, total_count):
         self.work_dir = work_dir
         self.ipa_file = ipa_file
         self.rescan_urls = rescan_urls
+        self.num = num
+        self.total_count = total_count
         self.info_plist_results = {}
         self.analyze()
 
@@ -22,7 +24,7 @@ class Analyzer:
         except FileNotFoundError:
             return
 
-        logging.info(f'Starting to analyze {self.ipa_file}...')
+        logging.info(f'[{self.num}/{self.total_count}] Starting to analyze {self.ipa_file}...')
         self.info_plist_results = self.analyze_info_plist(app_path)
 
         urls = self.extract_urls(app_path, self.rescan_urls)

@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 
 from tlsanalyzer.analyzer import Analyzer
 from tlsanalyzer.collector import Collector
@@ -13,21 +14,28 @@ class App:
         self.rescan_urls = rescan_urls
 
     def run(self):
+        start_time = time.time()
         collector = Collector(self.work_dir)
         try:
             apps = collector.collect()
         except FileNotFoundError:
             return
 
+        num = 1
+        total_count = len(apps)
         insecure_apps = []
         for app in apps:
-            analyzer = Analyzer(self.work_dir, app, self.rescan_urls)
+            analyzer = Analyzer(self.work_dir, app, self.rescan_urls, num, total_count)
+            num += 1
             if analyzer.ats_exceptions():
                 insecure_apps.append(analyzer.info_plist_results)
 
         logging.info('')
         logging.info('--- Analysis complete ---')
-        logging.info(f'{len(insecure_apps)} / {len(apps)} apps have ATS exceptions')
+        logging.info(f'Rescanned URLs: {self.rescan_urls}')
+        logging.info(f'Duration: {round(time.time() - start_time, 2)}s')
+        logging.info(f'ATS exceptions: {len(insecure_apps)} / {len(apps)}')
+        logging.info(f'Results: {self.output_file}')
 
         results = open(self.output_file, 'w')
         # magic happens here to make it pretty-printed
