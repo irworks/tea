@@ -1,33 +1,58 @@
 import logging
-import json
+import os
 
-from tlsanalyzer.collector import Collector
-from tlsanalyzer.analyzer import Analyzer
+from argparse import ArgumentParser
+
+from tlsanalyzer.app import App
 
 
 def main():
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s [%(module)s] %(message)s', datefmt='%H:%M:%S')
+    parser = ArgumentParser()
+    parser.add_argument(
+        '-v',
+        '--verbosity',
+        help='Set verbosity level (default: %(default)s)',
+        choices=['INFO', 'WARNING', 'DEBUG'],
+        default='INFO',
+    )
+
+    parser.add_argument(
+        '-w',
+        '--work-dir',
+        help='Set the working directory containing your .ipa files.',
+        type=dir_path,
+        required=True
+    )
+
+    parser.add_argument(
+        '-i',
+        '--ignore-url-cache',
+        help='Re-analyze all apps for containing urls.',
+        nargs='?',
+        const=True,
+        type=bool,
+        default=False
+    )
+
+    parser.add_argument(
+        '-o',
+        '--output',
+        help='Set the output file.',
+        default='results.json'
+    )
+
+    args = parser.parse_args()
+    level = logging.getLevelName(args.verbosity)
+
+    logging.basicConfig(level=level, format='%(asctime)s %(levelname)s [%(module)s] %(message)s', datefmt='%H:%M:%S')
     logging.info('Starting up...')
-    work_dir = "/Users/ilja/Desktop/tls-analyzer-work-dir/"
 
-    collector = Collector(work_dir)
-    try:
-        apps = collector.collect()
-    except FileNotFoundError:
-        return
+    app = App(work_dir=args.work_dir, output_file=args.output, rescan_urls=args.ignore_url_cache)
+    app.run()
 
-    insecure_apps = []
-    for app in apps:
-        analyzer = Analyzer(work_dir, app)
-        if analyzer.ats_exceptions():
-            insecure_apps.append(analyzer.info_plist_results)
 
-    logging.info('')
-    logging.info('--- Analysis complete ---')
-    logging.info(f'{len(insecure_apps)} / {len(apps)} apps have ATS exceptions')
-
-    results = open('results.json', 'w')
-    # magic happens here to make it pretty-printed
-    results.write(json.dumps(insecure_apps))
-    results.close()
-
+def dir_path(string):
+    if os.path.isdir(string):
+        return string
+    else:
+        raise NotADirectoryError(string)
