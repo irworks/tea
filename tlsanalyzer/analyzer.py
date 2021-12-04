@@ -8,9 +8,10 @@ from tlsanalyzer.modules.url_extractor import UrlExtractor
 
 class Analyzer:
 
-    def __init__(self, work_dir, ipa_file):
+    def __init__(self, work_dir, ipa_file, rescan_urls):
         self.work_dir = work_dir
         self.ipa_file = ipa_file
+        self.rescan_urls = rescan_urls
         self.info_plist_results = {}
         self.analyze()
 
@@ -24,7 +25,7 @@ class Analyzer:
         logging.info(f'Starting to analyze {self.ipa_file}...')
         self.info_plist_results = self.analyze_info_plist(app_path)
 
-        urls = self.extract_urls(app_path)
+        urls = self.extract_urls(app_path, self.rescan_urls)
         self.info_plist_results['urls'] = urls
 
     '''
