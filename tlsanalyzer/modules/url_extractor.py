@@ -60,10 +60,10 @@ class UrlExtractor:
                     continue
                 elif file.endswith(('.nib', '.ttf', '.svg', '.woff2', '.otf', '.jpg',
                                     '.png', '.dylib', '.mobileprovision', '.pdf', '.webp',
-                                    'Assets.car')):
+                                    '.pbf', '.mp3', '.mp4', '.wav', 'Assets.car', 'PkgInfo')):
                     continue
                 else:
-                    # logging.debug(f'Checking {file}')
+                    logging.debug(f'Checking file: {file}')
                     full_path = os.path.join(self.target_dir, file)
                     if os.path.isdir(full_path):
                         continue
