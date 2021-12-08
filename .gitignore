@@ -2,3 +2,4 @@ venv/
 tlsanalyzer/results.json
 .DS_Store
 .idea/
+visualizer/node_modules
