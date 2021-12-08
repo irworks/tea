@@ -56,6 +56,8 @@ def check_transport_security(p_list):
                     'to domains listed in NSExceptionDomains.'),
             })
 
+        # this is actually a good thing!
+        # https://developer.apple.com/documentation/bundleresources/information_property_list/nsapptransportsecurity/nsexceptiondomains
         if ats_dict and ats_dict.get('NSPinnedDomains'):
             domains = ats_dict.get('NSPinnedDomains')
             findings = {
