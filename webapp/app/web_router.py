@@ -1,7 +1,11 @@
+from webapp.app.controller.index import IndexController
+
+
 def web_routes(app):
     @app.route('/')
-    def hello():
-        return "Hello World!"
+    def index():
+        controller = IndexController(app)
+        return controller.index()
 
     @app.route('/test')
     def test():
