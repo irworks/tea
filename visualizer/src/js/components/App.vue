@@ -30,6 +30,17 @@
           </tr>
           </tbody>
         </table>
+
+        <div class="card">
+          <div class="card-header">
+            URLs
+          </div>
+          <ul>
+            <li v-for="url in urls.slice(0, 100)">
+              {{ url }}
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

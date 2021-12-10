@@ -92,7 +92,7 @@ class UrlExtractor:
 
     def url_n_email_extract(self, dat):
         urls = []
-        # URLs Extraction My Custom regex
+
         pattern = re.compile(
             (
                 r'((?:https?://|s?ftps?://|'
@@ -103,6 +103,7 @@ class UrlExtractor:
         url_list = re.findall(pattern, dat)
         for url in url_list:
             if url not in urls \
+                    and len(url) >= 11\
                     and 'DTDs/PropertyList-1.0.dtd' not in url\
                     and 'w3.org' not in url\
                     and not url.endswith('/LICENSE')\

@@ -23,7 +23,7 @@
       <td>iOS {{ app.min_os }}+</td>
       <td>{{ app.ats.length }}</td>
       <td>{{ app.urls.length }}</td>
-      <td><button class="btn btn-primary" @click="currentApp = app">Details</button></td>
+      <td><button class="btn btn-primary" @click="selectApp(app)">Details</button></td>
     </tr>
     </tbody>
   </table>
@@ -47,6 +47,10 @@ export default {
     }
   },
   methods: {
+    selectApp(app) {
+      this.currentApp = app;
+      window.scrollTo(0,0);
+    },
     icon(field) {
       if (!this.sortOrder.hasOwnProperty(field)) {
         return '';
