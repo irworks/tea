@@ -19,14 +19,16 @@ from webapp.app.web_router import web_routes
 db = SQLAlchemy()
 migrate = Migrate()
 
+from webapp.app.models import *
+
 
 # Application Factory
 def create_app():
     app = Flask(__name__)
 
     # Configure the flask app instance
-    # CONFIG_TYPE = os.getenv('CONFIG_TYPE', default='config.DevelopmentConfig')
-    # app.config.from_object(CONFIG_TYPE)
+    config_type = os.getenv('CONFIG_TYPE', default='webapp.config.DevelopmentConfig')
+    app.config.from_object(config_type)
 
     register_cli_commands(app)
 
@@ -66,6 +68,7 @@ def register_routes(app):
 def initialize_extensions(app):
     db.init_app(app)
     migrate.init_app(app, db)
+    db.create_all(app=app)
 
 
 def register_error_handlers(app):
