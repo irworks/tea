@@ -2,8 +2,8 @@ import json
 import logging
 import time
 
-from tlsanalyzer.analyzer import Analyzer
-from tlsanalyzer.collector import Collector
+from webapp.app.tlsanalyzer.analyzer import Analyzer
+from webapp.app.tlsanalyzer.collector import Collector
 
 
 class App:

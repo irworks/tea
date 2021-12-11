@@ -1,5 +1,5 @@
 from plistlib import (load)
-from tlsanalyzer.modules.ats.ats_plist_analyzer import (
+from webapp.app.tlsanalyzer.modules.ats.ats_plist_analyzer import (
     check_transport_security
 )
 

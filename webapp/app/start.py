@@ -3,14 +3,17 @@ This contains the application factory for creating flask application instances.
 Using the application factory allows for the creation of flask applications configured
 for different environments based on the value of the CONFIG_TYPE environment variable
 """
-
+import logging
 import os
+
+import click
 from flask import Flask, render_template
 
 # Flask extension objects instantiation
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
+from webapp.app.tlsanalyzer.app import App
 from webapp.app.web_router import web_routes
 
 db = SQLAlchemy()
@@ -25,6 +28,8 @@ def create_app():
     # CONFIG_TYPE = os.getenv('CONFIG_TYPE', default='config.DevelopmentConfig')
     # app.config.from_object(CONFIG_TYPE)
 
+    register_cli_commands(app)
+
     # Initialize flask extension objects
     initialize_extensions(app)
 
@@ -34,6 +39,24 @@ def create_app():
     register_routes(app)
 
     return app
+
+
+def register_cli_commands(app):
+    @app.cli.command("analyze")
+    @click.option("-w", "--work-dir", required=True, type=dir_path)
+    @click.option("-v", "--verbosity", default='INFO')
+    def analyze(work_dir, verbosity):
+        log_options = ['INFO', 'WARNING', 'DEBUG']
+        if verbosity not in log_options:
+            return False
+        print(f'Starting analyzer in {work_dir} with log level = {verbosity}!')
+        level = logging.getLevelName(verbosity)
+        logging.basicConfig(level=level, format='%(asctime)s %(levelname)s [%(module)s] %(message)s',
+                            datefmt='%H:%M:%S')
+        logging.info('Starting up...')
+
+        tls_app = App(work_dir=work_dir, output_file="results.json", rescan_urls=False)
+        tls_app.run()
 
 
 def register_routes(app):
@@ -70,3 +93,11 @@ def register_error_handlers(app):
     @app.errorhandler(500)
     def server_error(e):
         return render_template('500.html'), 500
+
+
+def dir_path(string):
+    if os.path.isdir(string):
+        return string
+    else:
+        raise NotADirectoryError(string)
+

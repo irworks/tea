@@ -1,9 +1,9 @@
 import logging
 import os.path
 
-from tlsanalyzer.extractor import Extractor
-from tlsanalyzer.modules.info_plist_analyzer import InfoPlistAnalyzer
-from tlsanalyzer.modules.url_extractor import UrlExtractor
+from webapp.app.tlsanalyzer.extractor import Extractor
+from webapp.app.tlsanalyzer.modules.info_plist_analyzer import InfoPlistAnalyzer
+from webapp.app.tlsanalyzer.modules.url_extractor import UrlExtractor
 
 
 class Analyzer:

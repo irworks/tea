@@ -1,5 +1,5 @@
 venv/
-tlsanalyzer/results.json
+webapp/app/tlsanalyzer/results.json
 .DS_Store
 .idea/
 visualizer/node_modules
