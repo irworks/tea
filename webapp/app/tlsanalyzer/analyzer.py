@@ -1,7 +1,7 @@
 import logging
 import os.path
 
-from webapp.app.models import IosApp
+from webapp.app.models import IosApp, Url
 from webapp.app.tlsanalyzer.extractor import Extractor
 from webapp.app.tlsanalyzer.helper.hash import calculate_hash
 from webapp.app.tlsanalyzer.modules.info_plist_analyzer import InfoPlistAnalyzer
@@ -10,15 +10,17 @@ from webapp.app.tlsanalyzer.modules.url_extractor import UrlExtractor
 
 class Analyzer:
 
-    def __init__(self, work_dir, ipa_file, rescan_urls, num, total_count, db):
+    def __init__(self, work_dir, ipa_file, rescan_urls, num, total_count, db, all_urls):
         self.work_dir = work_dir
         self.ipa_file = ipa_file
         self.rescan_urls = rescan_urls
         self.num = num
         self.total_count = total_count
         self.db = db
+        self.all_urls = all_urls
 
         self.info_plist_results = {}
+        self.added_urls = []
         self.analyze()
 
     def analyze(self):
@@ -43,7 +45,18 @@ class Analyzer:
 
         # Extract URLs
         urls = self.extract_urls(app_path, self.rescan_urls)
-        self.info_plist_results['urls'] = urls
+
+        url_keys = self.all_urls.keys()
+        for url in urls:
+            if url not in url_keys:
+                logging.debug(f'Found new url: {url}')
+                model = Url(url)
+                self.added_urls.append(model)
+            else:
+                model = self.all_urls[url]
+
+            self.db.session.add(model)
+            app.urls.append(model)
 
         results = self.info_plist_results
 

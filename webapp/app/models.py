@@ -1,5 +1,9 @@
 from webapp.app.start import db
 
+app_urls = db.Table('app_url',
+                db.Column('app_id', db.Integer, db.ForeignKey('apps.id'), primary_key=True),
+                db.Column('url_id', db.Integer, db.ForeignKey('urls.id'), primary_key=True)
+                )
 
 class IosApp(db.Model):
     __tablename__ = 'apps'
@@ -11,6 +15,8 @@ class IosApp(db.Model):
     build = db.Column(db.String(32), nullable=False)
     sdk = db.Column(db.String(16), nullable=False)
     min_ios = db.Column(db.Float, nullable=False)
+    urls = db.relationship('Url', secondary=app_urls, lazy='subquery',
+        backref=db.backref('apps', lazy=True))
 
     def __init__(self, file_hash, name, version, build, sdk, min_ios):
         self.file_hash = file_hash
@@ -47,19 +53,13 @@ class Url(db.Model):
     __tablename__ = 'urls'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    path = db.Column(db.String(256), nullable=False)
+    path = db.Column(db.String(128), nullable=False)
 
     def __init__(self, path):
         self.path = path
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
-
-
-app_urls = db.Table('app_url',
-                db.Column('app_id', db.Integer, db.ForeignKey('apps.id'), primary_key=True),
-                db.Column('url_id', db.Integer, db.ForeignKey('urls.id'), primary_key=True)
-                )
 
 
 class AtsException(db.Model):
