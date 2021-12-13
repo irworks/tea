@@ -2,7 +2,7 @@ import json
 import logging
 import time
 
-from webapp.app.models import Url
+from webapp.app.models import Url, Domain
 from webapp.app.tlsanalyzer.analyzer import Analyzer
 from webapp.app.tlsanalyzer.collector import Collector
 
@@ -15,6 +15,7 @@ class App:
         self.rescan_urls = rescan_urls
         self.db = db
         self.all_urls_dict = {}
+        self.all_domains_dict = {}
 
     def run(self):
         start_time = time.time()
@@ -33,9 +34,11 @@ class App:
         for each url if it already is in the database 
         '''
         self.add_urls_to_dict(Url.query.all())
+        self.add_domains_to_dict(Domain.query.all())
 
         for app in apps:
-            analyzer = Analyzer(self.work_dir, app, self.rescan_urls, num, total_count, self.db, self.all_urls_dict)
+            analyzer = Analyzer(self.work_dir, app, self.rescan_urls, num, total_count,
+                                self.db, self.all_urls_dict, self.all_domains_dict)
             num += 1
             if analyzer.ats_exceptions():
                 results = analyzer.info_plist_results
@@ -43,6 +46,7 @@ class App:
 
             # add the newly discovered url models to the local cache
             self.add_urls_to_dict(analyzer.added_urls)
+            self.add_domains_to_dict(analyzer.added_domains)
 
         self.db.session.commit()
 
@@ -61,3 +65,7 @@ class App:
     def add_urls_to_dict(self, models):
         for urlModel in models:
             self.all_urls_dict[urlModel.path] = urlModel
+
+    def add_domains_to_dict(self, models):
+        for domainModel in models:
+            self.all_domains_dict[domainModel.name] = domainModel

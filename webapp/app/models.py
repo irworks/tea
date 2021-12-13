@@ -5,6 +5,11 @@ app_urls = db.Table('app_url',
                 db.Column('url_id', db.Integer, db.ForeignKey('urls.id'), primary_key=True)
                 )
 
+app_domains = db.Table('app_domain',
+                db.Column('app_id', db.Integer, db.ForeignKey('apps.id'), primary_key=True),
+                db.Column('domain_id', db.Integer, db.ForeignKey('domains.id'), primary_key=True)
+                )
+
 class IosApp(db.Model):
     __tablename__ = 'apps'
 
@@ -16,6 +21,8 @@ class IosApp(db.Model):
     sdk = db.Column(db.String(16), nullable=False)
     min_ios = db.Column(db.Float, nullable=False)
     urls = db.relationship('Url', secondary=app_urls, lazy='subquery',
+        backref=db.backref('apps', lazy=True))
+    domains = db.relationship('Domain', secondary=app_domains, lazy='subquery',
         backref=db.backref('apps', lazy=True))
 
     def __init__(self, file_hash, name, version, build, sdk, min_ios):
@@ -41,12 +48,6 @@ class Domain(db.Model):
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
-
-
-app_domains = db.Table('app_domain',
-                db.Column('app_id', db.Integer, db.ForeignKey('apps.id'), primary_key=True),
-                db.Column('domain_id', db.Integer, db.ForeignKey('domains.id'), primary_key=True)
-                )
 
 
 class Url(db.Model):

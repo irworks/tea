@@ -1,7 +1,8 @@
 import logging
 import os.path
 
-from webapp.app.models import IosApp, Url
+from urllib.parse import urlparse
+from webapp.app.models import IosApp, Url, Domain
 from webapp.app.tlsanalyzer.extractor import Extractor
 from webapp.app.tlsanalyzer.helper.hash import calculate_hash
 from webapp.app.tlsanalyzer.modules.info_plist_analyzer import InfoPlistAnalyzer
@@ -10,7 +11,7 @@ from webapp.app.tlsanalyzer.modules.url_extractor import UrlExtractor
 
 class Analyzer:
 
-    def __init__(self, work_dir, ipa_file, rescan_urls, num, total_count, db, all_urls):
+    def __init__(self, work_dir, ipa_file, rescan_urls, num, total_count, db, all_urls, all_domains):
         self.work_dir = work_dir
         self.ipa_file = ipa_file
         self.rescan_urls = rescan_urls
@@ -18,9 +19,11 @@ class Analyzer:
         self.total_count = total_count
         self.db = db
         self.all_urls = all_urls
+        self.all_domains = all_domains
 
         self.info_plist_results = {}
         self.added_urls = []
+        self.added_domains = []
         self.analyze()
 
     def analyze(self):
@@ -47,7 +50,13 @@ class Analyzer:
         urls = self.extract_urls(app_path, self.rescan_urls)
 
         url_keys = self.all_urls.keys()
+        domain_keys = self.all_domains.keys()
+        domains_in_app = []
         for url in urls:
+            # Extract domain from URL
+            domain = urlparse(url).netloc
+
+            # Check if this URL is new, if not use the existing one
             if url not in url_keys:
                 logging.debug(f'Found new url: {url}')
                 model = Url(url)
@@ -57,6 +66,23 @@ class Analyzer:
 
             self.db.session.add(model)
             app.urls.append(model)
+
+            # Add somewhat useful domains to the list
+            if domain and len(domain) > 3:
+                domains_in_app.append(domain)
+
+        # Filter out domain duplicates
+        for domain in set(domains_in_app):
+            if domain not in domain_keys:
+                logging.debug(f'Found new domain: {domain}')
+                model = Domain(domain)
+                self.added_domains.append(model)
+                self.all_domains[domain] = model
+            else:
+                model = self.all_domains[domain]
+
+            self.db.session.add(model)
+            app.domains.append(model)
 
         results = self.info_plist_results
 
