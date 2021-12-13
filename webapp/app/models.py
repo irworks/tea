@@ -9,8 +9,8 @@ class IosApp(db.Model):
     name = db.Column(db.String(128), nullable=False)
     version = db.Column(db.String(32), nullable=False)
     build = db.Column(db.String(32), nullable=False)
-    skd = db.Column(db.String(16), nullable=False)
-    min_ios = db.Column(db.Integer, nullable=False)
+    sdk = db.Column(db.String(16), nullable=False)
+    min_ios = db.Column(db.Float, nullable=False)
 
     def __init__(self, file_hash, name, version, build, sdk, min_ios):
         self.file_hash = file_hash

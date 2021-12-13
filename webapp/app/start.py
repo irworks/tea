@@ -13,13 +13,13 @@ from flask import Flask, render_template
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
-from webapp.app.tlsanalyzer.app import App
 from webapp.app.web_router import web_routes
 
 db = SQLAlchemy()
 migrate = Migrate()
 
 from webapp.app.models import *
+from webapp.app.tlsanalyzer.app import App
 
 
 # Application Factory
@@ -30,8 +30,6 @@ def create_app():
     config_type = os.getenv('CONFIG_TYPE', default='webapp.config.DevelopmentConfig')
     app.config.from_object(config_type)
 
-    register_cli_commands(app)
-
     # Initialize flask extension objects
     initialize_extensions(app)
 
@@ -39,6 +37,8 @@ def create_app():
     # register_error_handlers(app)
 
     register_routes(app)
+
+    register_cli_commands(app)
 
     return app
 
@@ -57,7 +57,7 @@ def register_cli_commands(app):
                             datefmt='%H:%M:%S')
         logging.info('Starting up...')
 
-        tls_app = App(work_dir=work_dir, output_file="results.json", rescan_urls=False)
+        tls_app = App(work_dir=work_dir, output_file="results.json", rescan_urls=False, db=db)
         tls_app.run()
 
 
