@@ -9,6 +9,8 @@ def check_transport_security(p_list):
         ats_dict = p_list['NSAppTransportSecurity']
         if ats_dict and ats_dict.get('NSAllowsArbitraryLoads'):
             ats.append({
+                'key': 'NSAllowsArbitraryLoads',
+                'domain': None,
                 'issue': ('App Transport Security '
                           'AllowsArbitraryLoads is allowed'),
                 'status': 'insecure',
@@ -25,6 +27,8 @@ def check_transport_security(p_list):
             })
         if ats_dict and ats_dict.get('NSAllowsArbitraryLoadsForMedia'):
             ats.append({
+                'key': 'NSAllowsArbitraryLoadsForMedia',
+                'domain': None,
                 'issue': 'Insecure media load is allowed',
                 'status': 'insecure',
                 'description': (
@@ -36,6 +40,8 @@ def check_transport_security(p_list):
             })
         if ats_dict and ats_dict.get('NSAllowsArbitraryLoadsInWebContent'):
             ats.append({
+                'key': 'NSAllowsArbitraryLoadsInWebContent',
+                'domain': None,
                 'issue': 'Insecure WebView load is allowed',
                 'status': 'insecure',
                 'description': (
@@ -46,6 +52,8 @@ def check_transport_security(p_list):
             })
         if ats_dict and ats_dict.get('NSAllowsLocalNetworking'):
             ats.append({
+                'key': 'NSAllowsLocalNetworking',
+                'domain': None,
                 'issue': 'Insecure local networking is allowed',
                 'status': 'insecure',
                 'description': (
@@ -61,6 +69,8 @@ def check_transport_security(p_list):
         if ats_dict and ats_dict.get('NSPinnedDomains'):
             domains = ats_dict.get('NSPinnedDomains')
             findings = {
+                'key': 'NSPinnedDomains',
+                'domain': None,
                 'issue': 'NSPinnedDomains is enabled',
                 'status': 'secure',
                 'description': (
@@ -80,6 +90,8 @@ def check_transport_security(p_list):
         if ats_dict and ats_dict.get('NSExceptionDomains'):
             exception_domains = ats_dict.get('NSExceptionDomains')
             ats.append({
+                'key': 'NSExceptionDomains',
+                'domain': None,
                 'issue': 'NSExceptionDomains',
                 'status': 'info',
                 'description': 'Custom App Transport Security configurations for named domains.',
@@ -94,6 +106,8 @@ def check_transport_security(p_list):
                         or config.get(old_exp, False)
                         or config.get(old_exp2, False)):
                     findings = {
+                        'key': 'NSExceptionAllowsInsecureHTTPLoads',
+                        'domain': None,
                         'issue': ('Insecure communication'
                                   ' to {} is allowed'.format(domain)),
                         'status': 'insecure',
@@ -110,6 +124,9 @@ def check_transport_security(p_list):
 
                 if config.get('NSIncludesSubdomains', False):
                     findings = {
+                        'key': 'NSIncludesSubdomains',
+                        'domain': None,
+                        'domain': format(domain),
                         'issue': ('NSIncludesSubdomains set to TRUE'
                                   ' for {}'.format(domain)),
                         'status': 'insecure',
@@ -131,6 +148,8 @@ def check_transport_security(p_list):
                                or config.get(old_tls, None))
                 if inc_min_tls in ['TLSv1.0', 'TLSv1.1']:
                     findings = {
+                        'key': ('NSExceptionMinimumTLSVersion-{}'.format(inc_min_tls)),
+                        'domain': format(domain),
                         'issue': ('NSExceptionMinimumTLSVersion set to {}'
                                   ' on {}'.format(inc_min_tls, domain)),
                         'status': 'insecure',
@@ -146,6 +165,8 @@ def check_transport_security(p_list):
 
                 elif inc_min_tls == 'TLSv1.2':
                     findings = {
+                        'key': ('NSExceptionMinimumTLSVersion-{}'.format(inc_min_tls)),
+                        'domain': format(domain),
                         'issue': ('NSExceptionMinimumTLSVersion set to {}'
                                   ' on {}'.format(inc_min_tls, domain)),
                         'status': 'warning',
@@ -163,6 +184,8 @@ def check_transport_security(p_list):
 
                 elif inc_min_tls == 'TLSv1.3':
                     findings = {
+                        'key': ('NSExceptionMinimumTLSVersion-{}'.format(inc_min_tls)),
+                        'domain': format(domain),
                         'issue': ('NSExceptionMinimumTLSVersion set to {}'
                                   ' on {}'.format(inc_min_tls, domain)),
                         'status': 'secure',
@@ -183,6 +206,8 @@ def check_transport_security(p_list):
                         'issue': ('NSExceptionMinimumTLSVersion set to {}'
                                   ' on {}'.format(inc_min_tls, domain)),
                         'status': 'info',
+                        'key': ('NSExceptionMinimumTLSVersion-{}'.format(inc_min_tls)),
+                        'domain': format(domain),
                         'description': (
                             'The minimum Transport Layer '
                             'Security (TLS) version '
@@ -197,6 +222,8 @@ def check_transport_security(p_list):
                         or config.get(old_fwd, False)
                         or config.get(old_fwd2, False)):
                     findings = {
+                        'key': 'NSExceptionRequiresForwardSecrecy',
+                        'domain': format(domain),
                         'issue': ('NSExceptionRequiresForwardSecrecy '
                                   'set to NO'
                                   ' for {}'.format(domain)),
@@ -220,6 +247,8 @@ def check_transport_security(p_list):
 
                 if config.get('NSRequiresCertificateTransparency', False):
                     findings = {
+                        'key': 'NSRequiresCertificateTransparency',
+                        'domain': format(domain),
                         'issue': ('NSRequiresCertificateTransparency'
                                   ' set to YES for {}'.format(domain)),
                         'status': 'secure',

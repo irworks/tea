@@ -2,7 +2,7 @@ import logging
 import os.path
 
 from urllib.parse import urlparse
-from webapp.app.models import IosApp, Url, Domain
+from webapp.app.models import IosApp, Url, Domain, AppAtsExceptions
 from webapp.app.tlsanalyzer.extractor import Extractor
 from webapp.app.tlsanalyzer.helper.hash import calculate_hash
 from webapp.app.tlsanalyzer.modules.info_plist_analyzer import InfoPlistAnalyzer
@@ -11,7 +11,7 @@ from webapp.app.tlsanalyzer.modules.url_extractor import UrlExtractor
 
 class Analyzer:
 
-    def __init__(self, work_dir, ipa_file, rescan_urls, num, total_count, db, all_urls, all_domains):
+    def __init__(self, work_dir, ipa_file, rescan_urls, num, total_count, db, all_urls, all_domains, all_ats_exceptions):
         self.work_dir = work_dir
         self.ipa_file = ipa_file
         self.rescan_urls = rescan_urls
@@ -20,6 +20,7 @@ class Analyzer:
         self.db = db
         self.all_urls = all_urls
         self.all_domains = all_domains
+        self.all_ats_exceptions = all_ats_exceptions
 
         self.info_plist_results = {}
         self.added_urls = []
@@ -43,6 +44,12 @@ class Analyzer:
         app = IosApp.query.filter_by(file_hash=file_hash).first()
         if app is None:
             app = IosApp(file_hash, '', '', '', '', 0)
+
+        '''
+        else:
+        self.db.session.query(AppAtsExceptions).filter(AppAtsExceptions.app_id == app.id).delete()
+        self.db.session.commit()
+        '''
 
         self.info_plist_results = self.analyze_info_plist(app_path)
 
@@ -86,12 +93,35 @@ class Analyzer:
 
         results = self.info_plist_results
 
+        # Set ATS Exceptions
+        for exception in results['ats']:
+            key = exception['key']
+            domain = exception['domain']
+            domain_model = None
+            if domain:
+                if domain not in domain_keys:
+                    domain_model = Domain(domain)
+                    self.added_domains.append(domain_model)
+                    self.all_domains[domain] = domain_model
+                    self.db.session.add(domain_model)
+
+                domain_model = self.all_domains[domain]
+
+            aae = AppAtsExceptions()
+            aae.exception = self.all_ats_exceptions[key]
+            aae.app = app
+            if domain_model:
+                aae.domain = domain_model
+
+            self.db.session.add(aae)
+
         # Prepare database model
         app.name = results['name']
         app.version = results['version']
         app.build = results['build']
         app.sdk = results['sdk']
         app.min_ios = results['min_os']
+
         self.db.session.add(app)
 
     '''

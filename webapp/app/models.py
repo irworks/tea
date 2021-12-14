@@ -10,6 +10,21 @@ app_domains = db.Table('app_domain',
                 db.Column('domain_id', db.Integer, db.ForeignKey('domains.id'), primary_key=True)
                 )
 
+
+class AppAtsExceptions(db.Model):
+    __tablename__ = 'app_ats_exceptions'
+    app_id = db.Column(db.ForeignKey('apps.id'), primary_key=True)
+    exception_id = db.Column(db.ForeignKey('ats_exceptions.id'), primary_key=True)
+    domain_id = db.Column(db.Integer, db.ForeignKey('domains.id'), nullable=True, primary_key=True)
+
+    app = db.relationship("IosApp", back_populates="ats_exceptions")
+    exception = db.relationship("AtsException")
+    domain = db.relationship("Domain")
+
+    def __repr__(self):
+        return '<appId-exceptionId {}-{}>'.format(self.app_id, self.exception_id)
+
+
 class IosApp(db.Model):
     __tablename__ = 'apps'
 
@@ -24,6 +39,7 @@ class IosApp(db.Model):
         backref=db.backref('apps', lazy=True))
     domains = db.relationship('Domain', secondary=app_domains, lazy='subquery',
         backref=db.backref('apps', lazy=True))
+    ats_exceptions = db.relationship('AppAtsExceptions', back_populates='app')
 
     def __init__(self, file_hash, name, version, build, sdk, min_ios):
         self.file_hash = file_hash
@@ -69,20 +85,12 @@ class AtsException(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     key = db.Column(db.String(128), nullable=False)
 
-    # map int to values = ['secure', 'warning', 'info', 'insecure']
+    # map int to values = ['secure', 'info', 'warning', 'insecure']
     state = db.Column(db.Integer, nullable=False)
 
     def __init__(self, key, state):
-        self.path = key
+        self.key = key
         self.state = state
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
-
-
-app_exceptions = db.Table('app_ats_exceptions',
-                db.Column('app_id', db.Integer, db.ForeignKey('apps.id'), primary_key=True),
-                db.Column('exception_id', db.Integer, db.ForeignKey('ats_exceptions.id'), primary_key=True),
-                db.Column('meta', db.VARCHAR(128), nullable=True),
-                db.Column('domain_id', db.Integer, db.ForeignKey('domains.id'), nullable=True),
-                )
