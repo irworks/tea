@@ -40,6 +40,12 @@ class App:
         self.add_ats_exceptions_to_dict(AtsException.query.all())
 
         # Bad Hack: Clear out current ats_app_exceptions data to prevent duplicates
+        '''
+        The reasoning behind this is that appending app_ats_exceptions models a second time does not trigger an update,
+        SQLAlchemy always tries to insert which is a UNIQUE condition violation.
+        Suspected reason for this behaviour is the specific AppAtsExceptions model which is explicitly
+        instantiated and presumably considered as always a new entry.   
+        '''
         self.db.session.query(AppAtsExceptions).delete()
         self.db.session.commit()
 
