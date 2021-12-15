@@ -2,15 +2,15 @@
   "name": "tlsanalyzer-visualizer",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/js/app.js",
+  "main": "assets/js/app.js",
   "scripts": {
     "production": "npx webpack --mode=production",
     "development": "npx webpack --mode=development --progress",
     "watch": "npm run development -- --watch"
   },
   "keywords": [],
-  "author": "Ilja Rozhko <ir@mp-next-com>",
-  "license": "ISC",
+  "author": "Ilja Rozhko <ilja.rozhko@rub.de>",
+  "license": "MIT",
   "private": true,
   "devDependencies": {
     "@vue/compiler-sfc": "^3.2.24",

@@ -7,4 +7,4 @@ class IndexController:
         self.app = app
 
     def index(self):
-        return render_template('index.html')
+        return render_template('apps-list.html')

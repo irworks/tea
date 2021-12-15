@@ -2,4 +2,4 @@ venv/
 webapp/app/tlsanalyzer/results.json
 .DS_Store
 .idea/
-visualizer/node_modules
+webapp/app/node_modules

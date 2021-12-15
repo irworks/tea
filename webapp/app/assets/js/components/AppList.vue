@@ -20,9 +20,9 @@
       <th scope="row">{{ index }}</th>
       <td>{{ app.name }}</td>
       <td>{{ app.version }} ({{ app.build }})</td>
-      <td>iOS {{ app.min_os }}+</td>
-      <td>{{ app.ats.length }}</td>
-      <td>{{ app.urls.length }}</td>
+      <td>iOS {{ app.min_ios }}+</td>
+      <td>{{ 0 }}</td>
+      <td>{{ 0 }}</td>
       <td><button class="btn btn-primary" @click="selectApp(app)">Details</button></td>
     </tr>
     </tbody>
@@ -63,6 +63,10 @@ export default {
       let up = this.sortOrder[field];
 
       this.apps.sort((a, b) => {
+        if (!a.hasOwnProperty(field)) {
+          return 0;
+        }
+
         if (up) {
           return a[field].length > b[field].length;
         }
@@ -80,7 +84,7 @@ export default {
     loadJsonResults(callback) {
       const request = new XMLHttpRequest();
       request.overrideMimeType('application/json');
-      request.open('GET', '../../tlsanalyzer/results.json', true);
+      request.open('GET', '/api/apps', true);
       request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
           callback(request.responseText);
