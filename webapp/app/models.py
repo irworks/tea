@@ -1,5 +1,18 @@
 from webapp.app.start import db
 
+from sqlalchemy.inspection import inspect
+
+
+class Serializer(object):
+
+    def serialize(self):
+        return {c: getattr(self, c) for c in inspect(self).attrs.keys()}
+
+    @staticmethod
+    def serialize_list(l):
+        return [m.serialize() for m in l]
+
+
 app_urls = db.Table('app_url',
                 db.Column('app_id', db.Integer, db.ForeignKey('apps.id'), primary_key=True),
                 db.Column('url_id', db.Integer, db.ForeignKey('urls.id'), primary_key=True)
@@ -11,7 +24,7 @@ app_domains = db.Table('app_domain',
                 )
 
 
-class AppAtsExceptions(db.Model):
+class AppAtsExceptions(db.Model, Serializer):
     __tablename__ = 'app_ats_exceptions'
     app_id = db.Column(db.ForeignKey('apps.id'), primary_key=True)
     exception_id = db.Column(db.ForeignKey('ats_exceptions.id'), primary_key=True)
@@ -24,8 +37,14 @@ class AppAtsExceptions(db.Model):
     def __repr__(self):
         return '<appId-exceptionId {}-{}>'.format(self.app_id, self.exception_id)
 
+    def serialize(self):
+        return {
+            'exception_id': self.exception_id,
+            'domain_id': self.domain_id
+        }
 
-class IosApp(db.Model):
+
+class IosApp(db.Model, Serializer):
     __tablename__ = 'apps'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -52,8 +71,18 @@ class IosApp(db.Model):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'version': self.version,
+            'build': self.build,
+            'sdk': self.sdk,
+            'min_ios': self.min_ios
+        }
 
-class Domain(db.Model):
+
+class Domain(db.Model, Serializer):
     __tablename__ = 'domains'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -65,8 +94,14 @@ class Domain(db.Model):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name
+        }
 
-class Url(db.Model):
+
+class Url(db.Model, Serializer):
     __tablename__ = 'urls'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -78,8 +113,14 @@ class Url(db.Model):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'path': self.path
+        }
 
-class AtsException(db.Model):
+
+class AtsException(db.Model, Serializer):
     __tablename__ = 'ats_exceptions'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

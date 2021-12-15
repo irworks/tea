@@ -13,13 +13,14 @@ from flask import Flask, render_template
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
-from webapp.app.web_router import web_routes
-
 db = SQLAlchemy()
 migrate = Migrate()
 
 from webapp.app.models import *
 from webapp.app.tlsanalyzer.app import App
+
+from webapp.app.web_router import web_routes
+from webapp.app.api_router import api_routes
 
 
 # Application Factory
@@ -63,6 +64,7 @@ def register_cli_commands(app):
 
 def register_routes(app):
     web_routes(app)
+    api_routes(app, db)
 
 
 def initialize_extensions(app):
