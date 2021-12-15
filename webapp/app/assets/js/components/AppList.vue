@@ -17,11 +17,11 @@
     </thead>
     <tbody>
     <tr v-for="(app, index) in apps">
-      <th scope="row">{{ index }}</th>
+      <th scope="row">{{ app.id }}</th>
       <td>{{ app.name }}</td>
       <td>{{ app.version }} ({{ app.build }})</td>
       <td>iOS {{ app.min_ios }}+</td>
-      <td>{{ 0 }}</td>
+      <td>{{ app.ats }}</td>
       <td>{{ 0 }}</td>
       <td><button class="btn btn-primary" @click="selectApp(app)">Details</button></td>
     </tr>
@@ -63,15 +63,11 @@ export default {
       let up = this.sortOrder[field];
 
       this.apps.sort((a, b) => {
-        if (!a.hasOwnProperty(field)) {
-          return 0;
-        }
-
         if (up) {
-          return a[field].length > b[field].length;
+          return a[field] > b[field];
         }
 
-        return a[field].length < b[field].length;
+        return a[field] < b[field];
       });
     },
     fetchApps() {

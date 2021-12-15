@@ -10,11 +10,24 @@ class AppController:
         self.db = db
 
     def index(self):
-        apps = IosApp.query.all()
-        return jsonify(IosApp.serialize_list(apps))
+        # select all apps and their corresponding count of ats exceptions
+        ats_label = self.db.func.count(AppAtsExceptions.app_id).label('ats')
+        apps = self.db.session.query(IosApp, ats_label). \
+            join(AppAtsExceptions). \
+            group_by(IosApp.id).all()
 
-    def show(self, id):
-        app = IosApp.query.filter_by(id=id).first()
+        # build result models by appending the ats counts
+        result = []
+        for app, ats_count in apps:
+            app_dict = IosApp.serialize(app)
+
+            app_dict['ats'] = ats_count
+            result.append(app_dict)
+
+        return jsonify(result)
+
+    def show(self, app_id):
+        app = IosApp.query.filter_by(id=app_id).first()
         domains = app.domains
         urls = app.urls
         ats_exceptions = app.ats_exceptions
