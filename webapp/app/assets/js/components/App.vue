@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-header"><h2>{{ name }}</h2></div>
     <div class="card-body">
-      <p><b>Bundle Id:</b> {{bundle_identifier}}</p>
+      <p><b>Bundle Id:</b> {{bundle_id}}</p>
       <p><b>Version:</b> {{version}} ({{build}})</p>
       <p><b>SDK:</b> {{sdk}}</p>
 
@@ -51,7 +51,7 @@
 export default {
   name: "App",
   components: {},
-  props: ['id', 'name', 'bundle_identifier', 'binary', 'version', 'build', 'sdk', 'min_os', 'domains', 'ats'],
+  props: ['id', 'name', 'bundle_id', 'binary', 'version', 'build', 'sdk', 'min_os', 'domains', 'ats'],
   data() {
     return {
     }

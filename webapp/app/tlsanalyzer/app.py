@@ -35,6 +35,7 @@ class App:
         for each url if it already is in the database 
         '''
         self.init_ats_exceptions()
+
         self.add_urls_to_dict(Url.query.all())
         self.add_domains_to_dict(Domain.query.all())
         self.add_ats_exceptions_to_dict(AtsException.query.all())
@@ -80,28 +81,38 @@ class App:
 
     def init_ats_exceptions(self):
         ats_exceptions = [
-            {'key': 'NSPinnedDomains', 'state': 0},
-            {'key': 'NSExceptionMinimumTLSVersion-TLSv1.3', 'state': 0},
-            {'key': 'NSRequiresCertificateTransparency', 'state': 0},
-            {'key': 'NSExceptionDomains', 'state': 1},
-            {'key': 'NSExceptionMinimumTLSVersion-TLSv1.2', 'state': 2},
-            {'key': 'NSAllowsArbitraryLoads', 'state': 3},
-            {'key': 'NSAllowsArbitraryLoadsInWebContent', 'state': 3},
-            {'key': 'NSAllowsArbitraryLoadsForMedia', 'state': 3},
-            {'key': 'NSAllowsLocalNetworking', 'state': 3},
-            {'key': 'NSExceptionAllowsInsecureHTTPLoads', 'state': 3},
-            {'key': 'NSIncludesSubdomains', 'state': 3},
-            {'key': 'NSExceptionMinimumTLSVersion-TLSv1.0', 'state': 3},
-            {'key': 'NSExceptionMinimumTLSVersion-TLSv1.1', 'state': 3},
-            {'key': 'NSExceptionRequiresForwardSecrecy', 'state': 3}
+            {'key': 'NSExceptionDomains', 'state': 1, 'parent': None},
+            {'key': 'NSPinnedDomains', 'state': 0, 'parent': None},
+            {'key': 'NSExceptionMinimumTLSVersion-TLSv1.3', 'state': 0, 'parent': 'NSExceptionDomains'},
+            {'key': 'NSRequiresCertificateTransparency', 'state': 0, 'parent': 'NSExceptionDomains'},
+            {'key': 'NSExceptionMinimumTLSVersion-TLSv1.2', 'state': 2, 'parent': 'NSExceptionDomains'},
+            {'key': 'NSAllowsArbitraryLoads', 'state': 3, 'parent': None},
+            {'key': 'NSAllowsArbitraryLoadsInWebContent', 'state': 3, 'parent': None},
+            {'key': 'NSAllowsArbitraryLoadsForMedia', 'state': 3, 'parent': None},
+            {'key': 'NSAllowsLocalNetworking', 'state': 3, 'parent': None},
+            {'key': 'NSExceptionAllowsInsecureHTTPLoads', 'state': 3, 'parent': 'NSExceptionDomains'},
+            {'key': 'NSIncludesSubdomains', 'state': 3, 'parent': 'NSExceptionDomains'},
+            {'key': 'NSExceptionMinimumTLSVersion-TLSv1.0', 'state': 3, 'parent': 'NSExceptionDomains'},
+            {'key': 'NSExceptionMinimumTLSVersion-TLSv1.1', 'state': 3, 'parent': 'NSExceptionDomains'},
+            {'key': 'NSExceptionRequiresForwardSecrecy', 'state': 3, 'parent': 'NSExceptionDomains'}
         ]
 
+        models = {}
         for ats_exception in ats_exceptions:
             key = ats_exception['key']
             model = AtsException.query.filter_by(key=key).first()
             if model is None:
                 model = AtsException(key, ats_exception['state'])
+
+                # check if there is a parent defined, if so - connect them
+                parent = ats_exception['parent']
+                if parent:
+                    # TODO: Maybe fix by using .parent = models[parent] - currently wrong id is saved
+                    # TODO: needs fix in models.py
+                    model.parent_id = models[parent].id
+
             self.db.session.add(model)
+            models[model.key] = model
 
         self.db.session.commit()
 

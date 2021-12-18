@@ -107,7 +107,7 @@ def check_transport_security(p_list):
                         or config.get(old_exp2, False)):
                     findings = {
                         'key': 'NSExceptionAllowsInsecureHTTPLoads',
-                        'domain': None,
+                        'domain': format(domain),
                         'issue': ('Insecure communication'
                                   ' to {} is allowed'.format(domain)),
                         'status': 'insecure',
@@ -125,7 +125,6 @@ def check_transport_security(p_list):
                 if config.get('NSIncludesSubdomains', False):
                     findings = {
                         'key': 'NSIncludesSubdomains',
-                        'domain': None,
                         'domain': format(domain),
                         'issue': ('NSIncludesSubdomains set to TRUE'
                                   ' for {}'.format(domain)),

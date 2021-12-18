@@ -43,7 +43,7 @@ class Analyzer:
 
         app = IosApp.query.filter_by(file_hash=file_hash).first()
         if app is None:
-            app = IosApp(file_hash, '', '', '', '', 0)
+            app = IosApp(file_hash, '', '', '', '', '', 0)
 
         '''
         else:
@@ -117,6 +117,7 @@ class Analyzer:
 
         # Prepare database model
         app.name = results['name']
+        app.bundle_id = results['bundle_identifier']
         app.version = results['version']
         app.build = results['build']
         app.sdk = results['sdk']

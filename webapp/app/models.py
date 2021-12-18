@@ -52,6 +52,7 @@ class IosApp(db.Model, Serializer):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     file_hash = db.Column(db.String(40), nullable=False)
     name = db.Column(db.String(128), nullable=False)
+    bundle_id = db.Column(db.String(128), nullable=False)
     version = db.Column(db.String(32), nullable=False)
     build = db.Column(db.String(32), nullable=False)
     sdk = db.Column(db.String(16), nullable=False)
@@ -62,10 +63,10 @@ class IosApp(db.Model, Serializer):
         backref=db.backref('apps', lazy=True))
     ats_exceptions = db.relationship('AppAtsExceptions', back_populates='app')
 
-    def __init__(self, file_hash, name, version, build, sdk, min_ios):
+    def __init__(self, file_hash, name, bundle_id, version, build, sdk, min_ios):
         self.file_hash = file_hash
         self.name = name
-        #self.bundle_id = bundle_id
+        self.bundle_id = bundle_id
         self.version = version
         self.build = build
         self.sdk = sdk
@@ -78,6 +79,7 @@ class IosApp(db.Model, Serializer):
         return {
             'id': self.id,
             'name': self.name,
+            'bundle_id': self.bundle_id,
             'version': self.version,
             'build': self.build,
             'sdk': self.sdk,
@@ -128,9 +130,14 @@ class AtsException(db.Model, Serializer):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     key = db.Column(db.String(128), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    documentation_url = db.Column(db.String(128), nullable=True)
 
     # map int to values = ['secure', 'info', 'warning', 'insecure']
     state = db.Column(db.Integer, nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey('ats_exceptions.id'), nullable=True)
+
+    parent = db.relationship("AtsException", uselist=False)
 
     def __init__(self, key, state):
         self.key = key
@@ -151,5 +158,6 @@ class AtsException(db.Model, Serializer):
             'id': self.id,
             'key': self.key,
             'state': state_value,
-            'score': self.state
+            'score': self.state,
+            'parent_id': self.parent_id,
         }
