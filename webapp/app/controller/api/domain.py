@@ -1,0 +1,39 @@
+from flask import jsonify
+
+
+class DomainController:
+
+    def __init__(self, app, db):
+        self.app = app
+        self.db = db
+
+    '''
+    Return domains which are used in multiple apps.  
+    '''
+    def cross_domains(self):
+        query = 'SELECT a1.app_id, a1.domain_id, domains.name, apps.name\
+          FROM app_domain a1\
+          JOIN (SELECT a2.domain_id\
+                  FROM app_domain a2\
+              GROUP BY a2.domain_id\
+                HAVING COUNT(a2.domain_id) > 1) a2 ON a2.domain_id = a1.domain_id\
+          JOIN domains ON a1.domain_id = domains.id\
+          JOIN apps ON a1.app_id = apps.id;'
+
+        rows = self.db.engine.execute(query)
+        result = {}
+
+        # build an results set with domain_id => {domain_name: '', apps: []}
+        for app_id, domain_id, domain_name, app_name in rows:
+            if domain_id not in result:
+                result[domain_id] = {
+                    'domain_name': domain_name,
+                    'apps': []
+                }
+
+            result[domain_id]['apps'].append({
+                'app_id': app_id,
+                'app_name': app_name
+            })
+
+        return jsonify(result)

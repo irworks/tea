@@ -1,4 +1,5 @@
 from webapp.app.controller.api.app import AppController
+from webapp.app.controller.api.domain import DomainController
 
 
 def api_routes(app, db):
@@ -15,3 +16,8 @@ def api_routes(app, db):
     def apps_details(app_id=0):
         controller = AppController(app, db)
         return controller.show(app_id)
+
+    @app.route('/api/domains/cross')
+    def domains_cross():
+        controller = DomainController(app, db)
+        return controller.cross_domains()

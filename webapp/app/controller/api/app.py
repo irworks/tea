@@ -26,6 +26,9 @@ class AppController:
 
         return jsonify(result)
 
+    '''
+    Return an app model and all related domains, urls and detected ats exceptions. 
+    '''
     def show(self, app_id):
         app = IosApp.query.filter_by(id=app_id).first()
         domains = app.domains
