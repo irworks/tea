@@ -40,9 +40,14 @@ class AppAtsExceptions(db.Model, Serializer):
         return '<appId-exceptionId {}-{}>'.format(self.app_id, self.exception_id)
 
     def serialize(self):
+        domain_out = None
+        if self.domain_id:
+            domain_out = self.domain.name
+
         return {
             'exception_id': self.exception_id,
-            'domain_id': self.domain_id
+            'domain_id': self.domain_id,
+            'domain': domain_out,
         }
 
 

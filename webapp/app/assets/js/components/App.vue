@@ -2,9 +2,9 @@
   <div class="card">
     <div class="card-header"><h2>{{ name }}</h2></div>
     <div class="card-body">
-      <p><b>Bundle Id:</b> {{bundle_id}}</p>
-      <p><b>Version:</b> {{version}} ({{build}})</p>
-      <p><b>SDK:</b> {{sdk}}</p>
+      <p><b>Bundle Id:</b> {{ bundle_id }}</p>
+      <p><b>Version:</b> {{ version }} ({{ build }})</p>
+      <p><b>SDK:</b> {{ sdk }}</p>
 
       <div class="card">
         <div class="card-header">
@@ -21,13 +21,13 @@
           </thead>
           <tbody>
           <tr v-for="atsException in ats">
-            <td class="text-center">
+            <td :class="paddingClasses(atsException)" class="text-center">
               <span class="badge rounded-pill" :class="stateClasses(atsException.status)">
-                {{atsException.status }}
+                {{ atsException.status }}
               </span></td>
-            <td>{{ atsException.key }}</td>
-            <td>{{ atsException.domain }}</td>
-            <td><small>{{ "atsException.description" }}</small></td>
+            <td :class="paddingClasses(atsException)">{{ atsException.key }}</td>
+            <td :class="paddingClasses(atsException)">{{ atsException.domain }}</td>
+            <td :class="paddingClasses(atsException)"><small>{{ "atsException.description" }}</small></td>
           </tr>
           </tbody>
         </table>
@@ -53,8 +53,7 @@ export default {
   components: {},
   props: ['id', 'name', 'bundle_id', 'binary', 'version', 'build', 'sdk', 'min_os', 'domains', 'ats'],
   data() {
-    return {
-    }
+    return {}
   },
   methods: {
     stateClasses: function (state) {
@@ -66,9 +65,15 @@ export default {
       };
       return states[state];
     },
+    paddingClasses: function (atsException) {
+      if (atsException.parent) {
+        return 'ps-5';
+      }
+
+      return '';
+    },
   },
-  computed: {
-  },
+  computed: {},
   mounted() {
 
   },

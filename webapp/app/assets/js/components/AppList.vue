@@ -59,7 +59,8 @@ export default {
           appAts.push({
             status: atsEx.state,
             key: atsEx.key,
-            domain: atsAppEx.domain_id,
+            domain: atsAppEx.domain,
+            parent: atsEx.parent_id
           });
         }
 
