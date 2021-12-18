@@ -5,7 +5,6 @@
       <p><b>Bundle Id:</b> {{bundle_identifier}}</p>
       <p><b>Version:</b> {{version}} ({{build}})</p>
       <p><b>SDK:</b> {{sdk}}</p>
-      <p><b>Bundle Id:</b> {{bundle_identifier}}</p>
 
       <div class="card">
         <div class="card-header">
@@ -16,6 +15,7 @@
           <tr>
             <th scope="col">State</th>
             <th scope="col">Issue</th>
+            <th scope="col">Domain</th>
             <th scope="col">Details</th>
           </tr>
           </thead>
@@ -25,19 +25,20 @@
               <span class="badge rounded-pill" :class="stateClasses(atsException.status)">
                 {{atsException.status }}
               </span></td>
-            <td>{{ atsException.issue }}</td>
-            <td><small>{{ atsException.description }}</small></td>
+            <td>{{ atsException.key }}</td>
+            <td>{{ atsException.domain }}</td>
+            <td><small>{{ "atsException.description" }}</small></td>
           </tr>
           </tbody>
         </table>
 
         <div class="card">
           <div class="card-header">
-            URLs
+            Domains
           </div>
           <ul>
-            <li v-for="url in urls.slice(0, 100)">
-              {{ url }}
+            <li v-for="domain in domains.slice(0, 100)">
+              {{ domain.name }}
             </li>
           </ul>
         </div>
@@ -50,10 +51,9 @@
 export default {
   name: "App",
   components: {},
-  props: ['name', 'bundle_identifier', 'binary', 'version', 'build', 'sdk', 'min_os', 'ats', 'urls'],
+  props: ['id', 'name', 'bundle_identifier', 'binary', 'version', 'build', 'sdk', 'min_os', 'domains', 'ats'],
   data() {
     return {
-      app: {}
     }
   },
   methods: {
@@ -69,8 +69,8 @@ export default {
   },
   computed: {
   },
-  created() {
-    console.log('App!')
+  mounted() {
+
   },
 }
 </script>

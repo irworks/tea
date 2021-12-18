@@ -1,4 +1,5 @@
 from webapp.app.controller.api.app import AppController
+from webapp.app.controller.api.ats_exceptions import AtsExceptionsController
 from webapp.app.controller.api.domain import DomainController
 
 
@@ -21,3 +22,8 @@ def api_routes(app, db):
     def domains_cross():
         controller = DomainController(app, db)
         return controller.cross_domains()
+
+    @app.route('/api/exceptions/ats')
+    def ats_exceptions_index():
+        controller = AtsExceptionsController(app, db)
+        return controller.index()

@@ -37,6 +37,7 @@ export default {
   components: {App},
   data() {
     return {
+      ats_exceptions: {},
       apps: {},
       currentApp: null,
       sortOrder: {
@@ -48,7 +49,25 @@ export default {
   },
   methods: {
     selectApp(app) {
-      this.currentApp = app;
+      this.fetchAppDetails(app.id).then((data) => {
+        let appModel = {};
+        Object.assign(appModel, app);
+        appModel.domains = data.domains;
+
+        let appAts = [];
+        for (const atsAppEx of data.ats_exceptions) {
+          const atsEx = this.ats_exceptions[atsAppEx.exception_id];
+
+          appAts.push({
+            status: atsEx.state,
+            key: atsEx.key,
+            domain: atsAppEx.domain_id,
+          });
+        }
+
+        appModel.ats = appAts;
+        this.currentApp = appModel;
+      });
       window.scrollTo(0,0);
     },
     icon(field) {
@@ -70,8 +89,16 @@ export default {
         return a[field] < b[field];
       });
     },
+    fetchAtsExceptions() {
+      fetch('/api/exceptions/ats').then((response) => {
+        response.json().then((data) => {
+          for (const i in data) {
+            this.ats_exceptions[data[i].id] = data[i];
+          }
+        });
+      });
+    },
     fetchApps() {
-      console.log('Fetching apps...');
       fetch('/api/apps').then((response) => {
         response.json().then((data) => {
           this.apps = data;
@@ -79,8 +106,14 @@ export default {
         });
       });
     },
+    fetchAppDetails(appId) {
+      return fetch(`/api/apps/${appId}`).then(response => {
+        return response.json();
+      });
+    },
   },
   created() {
+    this.fetchAtsExceptions();
     this.fetchApps();
   },
 }

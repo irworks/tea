@@ -1,3 +1,5 @@
+import logging
+
 from webapp.app.start import db
 
 from sqlalchemy.inspection import inspect
@@ -63,6 +65,7 @@ class IosApp(db.Model, Serializer):
     def __init__(self, file_hash, name, version, build, sdk, min_ios):
         self.file_hash = file_hash
         self.name = name
+        #self.bundle_id = bundle_id
         self.version = version
         self.build = build
         self.sdk = sdk
@@ -135,3 +138,18 @@ class AtsException(db.Model, Serializer):
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        state_values = ['secure', 'info', 'warning', 'insecure']
+        state_value = 'unknown'
+        try:
+            state_value = state_values[self.state]
+        except IndexError:
+            logging.warning(f'Unknown state index: {self.state} in ats_exceptions.id = {self.id}')
+
+        return {
+            'id': self.id,
+            'key': self.key,
+            'state': state_value,
+            'score': self.state
+        }
