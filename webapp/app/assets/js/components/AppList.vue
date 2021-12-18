@@ -71,23 +71,14 @@ export default {
       });
     },
     fetchApps() {
-      this.loadJsonResults((response) => {
-        // Parse JSON string into object
-        this.apps = JSON.parse(response);
-        this.count = this.apps.length;
+      console.log('Fetching apps...');
+      fetch('/api/apps').then((response) => {
+        response.json().then((data) => {
+          this.apps = data;
+          this.count = this.apps.length;
+        });
       });
     },
-    loadJsonResults(callback) {
-      const request = new XMLHttpRequest();
-      request.overrideMimeType('application/json');
-      request.open('GET', '/api/apps', true);
-      request.onreadystatechange = function () {
-        if (request.readyState === 4 && request.status === 200) {
-          callback(request.responseText);
-        }
-      };
-      request.send(null);
-    }
   },
   created() {
     this.fetchApps();
