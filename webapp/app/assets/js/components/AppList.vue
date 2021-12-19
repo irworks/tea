@@ -1,7 +1,13 @@
 <template>
-  <p>Loaded <b>{{ count }}</b> apps.</p>
+  <div v-if="isLoadingData()" class="alert alert-info shadow-sm position-fixed start-0 bottom-0 w-100">
+    <i class="spinner-border spinner-border-sm" role="status"></i> <span class="ms-2">Loading data...</span>
+  </div>
 
   <app v-if="currentApp" v-bind="currentApp"></app>
+
+  <div class="overall-stats" v-if="initialLoadComplete">
+    <p>Analyzed <b>{{ count }}</b> apps. Of those <b>{{ countAppsWithAts }}</b> have ATS exceptions.</p>
+  </div>
 
   <table class="table">
     <thead>
@@ -35,17 +41,23 @@ export default {
   components: {App},
   data() {
     return {
-      ats_exceptions: {},
+      runningRequests: 0,
+      initialLoadComplete: false,
+      atsExceptions: {},
       apps: {},
       currentApp: null,
       sortOrder: {
         'ats': true,
         'urls': true
       },
-      count: 0
+      count: 0,
+      countAppsWithAts: 0,
     }
   },
   methods: {
+    isLoadingData() {
+      return this.runningRequests > 0;
+    },
     selectApp(app) {
       this.fetchAppDetails(app.id).then((data) => {
         let appModel = {};
@@ -54,7 +66,7 @@ export default {
 
         let appAts = [];
         for (const atsAppEx of data.ats_exceptions) {
-          const atsEx = this.ats_exceptions[atsAppEx.exception_id];
+          const atsEx = this.atsExceptions[atsAppEx.exception_id];
 
           appAts.push({
             status: atsEx.state,
@@ -89,27 +101,34 @@ export default {
       });
     },
     fetchAtsExceptions() {
-      fetch('/api/exceptions/ats').then((response) => {
-        response.json().then((data) => {
-          for (const i in data) {
-            this.ats_exceptions[data[i].id] = data[i];
-          }
-        });
+      this.fetchData('/api/exceptions/ats').then((data) => {
+        for (const i in data) {
+          this.atsExceptions[data[i].id] = data[i];
+        }
       });
     },
     fetchApps() {
-      fetch('/api/apps').then((response) => {
-        response.json().then((data) => {
-          this.apps = data;
-          this.count = this.apps.length;
-        });
+      this.fetchData('/api/apps').then((data) => {
+        this.apps = data.apps;
+
+        this.countAppsWithAts = data.ats_apps_count;
+        this.count = this.apps.length;
+        this.initialLoadComplete = true;
       });
     },
     fetchAppDetails(appId) {
-      return fetch(`/api/apps/${appId}`).then(response => {
-        return response.json();
-      });
+      return this.fetchData(`/api/apps/${appId}`);
     },
+    fetchData(url) {
+      this.runningRequests++;
+      return fetch(url)
+          .then(response => {
+            this.runningRequests--;
+            return response.json();
+          }).catch(error => {
+            console.log(error);
+          });
+    }
   },
   created() {
     this.fetchAtsExceptions();
