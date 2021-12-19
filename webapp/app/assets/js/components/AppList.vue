@@ -6,9 +6,16 @@
   <app v-if="currentApp" v-bind="currentApp"></app>
 
   <div class="overall-stats" v-if="initialLoadComplete">
+    <h2>Overview</h2>
+    <div class="chart-wrapper w-25 mb-2">
+      <PieChart :chartData="chartData"/>
+    </div>
     <p>Analyzed <b>{{ count }}</b> apps. Of those <b>{{ countAppsWithAts }}</b> have ATS exceptions.</p>
   </div>
 
+  <hr>
+
+  <h2>App results</h2>
   <table class="table">
     <thead>
     <tr>
@@ -35,10 +42,12 @@
 
 <script>
 import App from "./App.vue";
+import {PieChart} from "vue-chart-3";
+import {ArcElement, Chart, PieController, Tooltip} from "chart.js";
 
 export default {
   name: "AppList",
-  components: {App},
+  components: {PieChart, App},
   data() {
     return {
       runningRequests: 0,
@@ -53,6 +62,20 @@ export default {
       count: 0,
       countAppsWithAts: 0,
     }
+  },
+  computed: {
+    chartData: function () {
+      return {
+        labels: ["Apps without ATS exceptions", "Apps with ATS exceptions"],
+        datasets: [
+          {
+            label: "Data One",
+            backgroundColor: ["#41B883", "#E46651"],
+            data: [this.count - this.countAppsWithAts, this.countAppsWithAts]
+          }
+        ]
+      }
+    },
   },
   methods: {
     isLoadingData() {
@@ -131,6 +154,8 @@ export default {
     }
   },
   created() {
+    Chart.register(PieController, ArcElement, Tooltip);
+
     this.fetchAtsExceptions();
     this.fetchApps();
   },
