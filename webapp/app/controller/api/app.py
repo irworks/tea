@@ -13,16 +13,21 @@ class AppController:
         # select all apps and their corresponding count of ats exceptions
         ats_label = self.db.func.count(AppAtsExceptions.app_id).label('ats')
         apps = self.db.session.query(IosApp, ats_label). \
-            join(AppAtsExceptions). \
+            outerjoin(AppAtsExceptions). \
             group_by(IosApp.id).all()
 
         # build result models by appending the ats counts
-        result = []
+        result = {
+            'ats_apps_count': 0,
+            'apps': []
+        }
         for app, ats_count in apps:
             app_dict = IosApp.serialize(app)
+            if ats_count > 0:
+                result['ats_apps_count'] += 1
 
             app_dict['ats'] = ats_count
-            result.append(app_dict)
+            result['apps'].append(app_dict)
 
         return jsonify(result)
 
