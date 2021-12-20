@@ -11,9 +11,9 @@
       <PieChart :chartData="chartData"/>
     </div>
     <p>Analyzed <b>{{ count }}</b> apps. Of those <b>{{ countAppsWithAts }}</b> have ATS exceptions.</p>
-  </div>
 
-  <hr>
+    <hr>
+  </div>
 
   <h2>App results</h2>
   <table class="table">
