@@ -1,7 +1,7 @@
 from flask import jsonify
 
 from webapp.app.controller.api.pagination import pagination_meta, paginate
-from webapp.app.models import Domain
+from webapp.app.models import Domain, app_domains
 
 
 class DomainController:
@@ -10,19 +10,35 @@ class DomainController:
         self.app = app
         self.db = db
 
+        self.apps_count = self.db.func.count().label('apps_count')
+
+    def build_result(self, domains):
+        result = []
+        for domain, apps_count in domains:
+            app_dict = Domain.serialize(domain)
+
+            app_dict['used_in_apps'] = apps_count
+            result.append(app_dict)
+        return result
+
     def index(self):
-        domains = self.db.session.query(Domain).all()
+        domains = self.db.session.query(Domain, self.apps_count).outerjoin(app_domains).group_by(Domain.id).all()
 
         return jsonify({
-            'domains': Domain.serialize_list(domains)
+            'domains': self.build_result(domains)
         })
 
     def index_paginated(self, page):
-        domains = paginate(self.db, Domain, page)
+        query = self.db.session.query(Domain, self.apps_count)\
+            .outerjoin(app_domains)\
+            .group_by(Domain.id)\
+            .order_by(self.apps_count.desc())
+
+        domains = paginate(query, page)
 
         return jsonify({
             'pagination': pagination_meta(domains),
-            'domains': Domain.serialize_list(domains.items)
+            'domains': self.build_result(domains.items)
         })
 
     '''

@@ -1,6 +1,6 @@
-def paginate(db, model, page):
-    per_page = 25
-    return db.session.query(model).paginate(page, per_page, error_out=False)
+def paginate(query, page):
+    per_page = 50
+    return query.paginate(page, per_page, error_out=False)
 
 
 def pagination_meta(page_object):
