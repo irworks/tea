@@ -1,9 +1,9 @@
 import {createApp} from 'vue';
-import AppList from './components/AppList.vue';
+import WebApp from './components/WebApp.vue';
 
 const app = createApp({
     components: {
-        AppList
+        WebApp
     },
     mounted() {
         console.log('Vue mounted!');

@@ -1,11 +1,29 @@
 from flask import jsonify
 
+from webapp.app.controller.api.pagination import pagination_meta, paginate
+from webapp.app.models import Domain
+
 
 class DomainController:
 
     def __init__(self, app, db):
         self.app = app
         self.db = db
+
+    def index(self):
+        domains = self.db.session.query(Domain).all()
+
+        return jsonify({
+            'domains': Domain.serialize_list(domains)
+        })
+
+    def index_paginated(self, page):
+        domains = paginate(self.db, Domain, page)
+
+        return jsonify({
+            'pagination': pagination_meta(domains),
+            'domains': Domain.serialize_list(domains.items)
+        })
 
     '''
     Return domains which are used in multiple apps.  

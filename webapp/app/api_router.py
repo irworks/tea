@@ -18,6 +18,16 @@ def api_routes(app, db):
         controller = AppController(app, db)
         return controller.show(app_id)
 
+    @app.route('/api/domains')
+    def domains_index():
+        controller = DomainController(app, db)
+        return controller.index()
+
+    @app.route('/api/domains/paginate/<int:page>')
+    def domains_index_paginated(page=1):
+        controller = DomainController(app, db)
+        return controller.index_paginated(page)
+
     @app.route('/api/domains/cross')
     def domains_cross():
         controller = DomainController(app, db)
