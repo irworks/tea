@@ -51,14 +51,23 @@ export default {
       history.pushState({}, this.views[viewKey].name, viewKey);
       event.preventDefault();
     },
-    isLoadingData() {
-      return this.runningRequests > 0;
-    },
     activeClass(viewKey) {
       return this.isActive(viewKey) ? 'active' : '';
     },
     isActive(viewKey) {
       return viewKey === this.activeView;
+    }
+  },
+  computed: {
+    isLoadingData() {
+      return this.runningRequests > 0;
+    },
+  },
+  mounted() {
+    // after site load -> try to find view
+    const path = document.location.pathname.replace('/', '');
+    if (this.views.hasOwnProperty(path)) {
+      this.activeView = path;
     }
   }
 }
