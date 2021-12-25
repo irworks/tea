@@ -1,11 +1,19 @@
 <template>
   <h2>All Domains</h2>
+  <p>
+    <small>
+    You are on page <b>{{ pagination.page }}</b> of <b>{{ pagination.pages }}</b>.
+    In total <b>{{ pagination.total }}</b> domains are on record.
+  </small>
+  </p>
+
   <table class="table">
     <thead>
     <tr>
       <th scope="col">#</th>
       <th scope="col">Domain</th>
-      <th scope="col">Used in Apps</th>
+      <th scope="col">Appears in Apps</th>
+      <th scope="col">Related ATS Exceptions</th>
       <th scope="col">Details</th>
     </tr>
     </thead>
@@ -14,13 +22,17 @@
       <th scope="row">{{ domain.id }}</th>
       <td>{{ domain.name }}</td>
       <td>{{ domain.used_in_apps }}</td>
-      <td><button class="btn btn-primary">Details</button></td>
+      <td>{{ domain.ats_exceptions_count }}</td>
+      <td>
+        <button class="btn btn-primary" @click="fetchDomainDetails(domain.id)">Details</button>
+      </td>
     </tr>
     </tbody>
   </table>
   <nav aria-label="Domains navigation">
     <ul class="pagination justify-content-center">
-      <li class="page-item" :class="{disabled: firstPage}"><a class="page-link" href="#" @click="prevPage">Previous</a></li>
+      <li class="page-item" :class="{disabled: firstPage}"><a class="page-link" href="#" @click="prevPage">Previous</a>
+      </li>
       <li class="page-item" v-for="(val, offset) in pagesAround" :class="{active: offset === pagesAround / 2}">
         <a v-if="showPage(offset)" class="page-link" href="#" @click="fetchDomains(pageOffset(offset))">
           {{ pageOffset(offset) }}
@@ -33,6 +45,7 @@
 
 <script>
 import ApiMixin from "./ApiMixin.js";
+import {UrlHelper} from "./UrlHelper.js";
 
 export default {
   name: "DomainList",
@@ -76,14 +89,22 @@ export default {
       this.fetchDomains(this.pagination.page - 1);
     },
     fetchDomains(page) {
+      UrlHelper.setParameter('page', page);
+
       this.fetchData(`/api/domains/paginate/${page}`).then((data) => {
         this.domains = data.domains;
         this.pagination = data.pagination;
       });
     },
+    fetchDomainDetails(domainId) {
+      this.fetchData(`/api/domains/${domainId}`).then((data) => {
+        console.log(data);
+      });
+    },
   },
   mounted() {
-    this.fetchDomains(1);
+    this.pagination.page = UrlHelper.getParameter('page', 1);
+    this.fetchDomains(this.pagination.page);
   }
 }
 </script>

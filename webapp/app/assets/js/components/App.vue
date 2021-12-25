@@ -37,7 +37,7 @@
             Domains
           </div>
           <ul>
-            <li v-for="domain in domains.slice(0, 100)">
+            <li v-for="domain in domains">
               {{ domain.name }}
             </li>
           </ul>
