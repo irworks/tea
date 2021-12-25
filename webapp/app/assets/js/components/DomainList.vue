@@ -45,34 +45,17 @@
 
 <script>
 import ApiMixin from "./ApiMixin.js";
+import PaginationMixin from "./PaginationMixin.js";
 import {UrlHelper} from "./UrlHelper.js";
 
 export default {
   name: "DomainList",
-  mixins: [ApiMixin],
+  mixins: [ApiMixin, PaginationMixin],
   data() {
     return {
       initialLoadComplete: false,
-      pagesAround: 10,
       domains: {},
-      pagination: {
-        'page': 1,
-        'pages': 1,
-        'per_page': 25,
-        'total': 0
-      },
       currentDomain: null
-    }
-  },
-  computed: {
-    pageRange: function () {
-      return Math.min(this.pagination.pages - this.pagination.page, this.pagesAround);
-    },
-    firstPage: function () {
-      return this.pagination.page <= 1;
-    },
-    finalPage: function () {
-      return this.pagination.page === this.pagination.pages;
     }
   },
   methods: {
