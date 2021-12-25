@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isLoadingData()" class="alert alert-info shadow-sm position-fixed start-0 bottom-0 w-100">
+  <div v-if="isLoadingData" class="alert alert-info shadow-sm position-fixed start-0 bottom-0 w-100">
     <i class="spinner-border spinner-border-sm" role="status"></i> <span class="ms-2">Loading data...</span>
   </div>
 
@@ -44,13 +44,14 @@
 import App from "./App.vue";
 import {PieChart} from "vue-chart-3";
 import {ArcElement, Chart, PieController, Tooltip} from "chart.js";
+import ApiMixin from "./ApiMixin.js";
 
 export default {
   name: "AppList",
   components: {PieChart, App},
+  mixins: [ApiMixin],
   data() {
     return {
-      runningRequests: 0,
       initialLoadComplete: false,
       atsExceptions: {},
       apps: {},
@@ -78,9 +79,6 @@ export default {
     },
   },
   methods: {
-    isLoadingData() {
-      return this.runningRequests > 0;
-    },
     selectApp(app) {
       this.fetchAppDetails(app.id).then((data) => {
         let appModel = {};
@@ -142,16 +140,6 @@ export default {
     fetchAppDetails(appId) {
       return this.fetchData(`/api/apps/${appId}`);
     },
-    fetchData(url) {
-      this.runningRequests++;
-      return fetch(url)
-          .then(response => {
-            this.runningRequests--;
-            return response.json();
-          }).catch(error => {
-            console.log(error);
-          });
-    }
   },
   created() {
     Chart.register(PieController, ArcElement, Tooltip);

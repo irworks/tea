@@ -32,8 +32,11 @@
 </template>
 
 <script>
+import ApiMixin from "./ApiMixin.js";
+
 export default {
   name: "DomainList",
+  mixins: [ApiMixin],
   data() {
     return {
       initialLoadComplete: false,
@@ -78,15 +81,6 @@ export default {
         this.pagination = data.pagination;
       });
     },
-    fetchData(url) {
-      // TODO: Generalize!
-      return fetch(url)
-          .then(response => {
-            return response.json();
-          }).catch(error => {
-            console.log(error);
-          });
-    }
   },
   mounted() {
     this.fetchDomains(1);
