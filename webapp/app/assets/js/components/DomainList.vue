@@ -15,7 +15,7 @@
       <th scope="col">#</th>
       <th scope="col">Domain</th>
       <th scope="col">Appears in Apps</th>
-      <th scope="col">Related ATS Exceptions</th>
+      <th scope="col">Apps with ATS Exceptions</th>
       <th scope="col">Details</th>
     </tr>
     </thead>
@@ -24,7 +24,7 @@
       <th scope="row">{{ domain.id }}</th>
       <td>{{ domain.name }}</td>
       <td>{{ domain.used_in_apps }}</td>
-      <td>{{ domain.ats_exceptions_count }}</td>
+      <td>{{ domain.ats_apps_count }}</td>
       <td>
         <button class="btn btn-primary" @click="fetchDomainDetails(domain.id)">Details</button>
       </td>

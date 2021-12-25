@@ -1,4 +1,5 @@
 from flask import jsonify
+from sqlalchemy import distinct
 
 from webapp.app.controller.api.pagination import pagination_meta, paginate
 from webapp.app.models import Domain, app_domains, IosApp, AppAtsExceptions
@@ -10,8 +11,8 @@ class DomainController:
         self.app = app
         self.db = db
 
-        self.apps_count = self.db.func.count(app_domains.c.app_id).label('apps_count')
-        self.ats_exceptions_count = self.db.func.count(AppAtsExceptions.app_id).label('ats_exceptions_count')
+        self.apps_count = self.db.func.count(distinct(app_domains.c.app_id)).label('apps_count')
+        self.ats_apps_count = self.db.func.count(distinct(AppAtsExceptions.app_id)).label('ats_apps_count')
 
     def build_result(self, domains):
         result = []
@@ -19,12 +20,12 @@ class DomainController:
             app_dict = Domain.serialize(domain)
 
             app_dict['used_in_apps'] = apps_count
-            app_dict['ats_exceptions_count'] = ats_exceptions_count
+            app_dict['ats_apps_count'] = ats_exceptions_count
             result.append(app_dict)
         return result
 
     def index(self):
-        domains = self.db.session.query(Domain, self.apps_count, self.ats_exceptions_count) \
+        domains = self.db.session.query(Domain, self.apps_count, self.ats_apps_count) \
             .outerjoin(app_domains) \
             .outerjoin(AppAtsExceptions) \
             .group_by(Domain.id).all()
@@ -34,7 +35,7 @@ class DomainController:
         })
 
     def index_paginated(self, page):
-        query = self.db.session.query(Domain, self.apps_count, self.ats_exceptions_count) \
+        query = self.db.session.query(Domain, self.apps_count, self.ats_apps_count) \
             .outerjoin(app_domains) \
             .outerjoin(AppAtsExceptions) \
             .group_by(Domain.id)\

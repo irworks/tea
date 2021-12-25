@@ -2,8 +2,8 @@
   <div class="card">
     <div class="card-header"><h2>{{ name }}</h2></div>
     <div class="card-body">
-      <p><b>Appears in Apps</b> {{ apps.length }}</p>
-      <p><b>Related ATS Exceptions:</b> {{ ats_exceptions.length }}</p>
+      <p><b>Appears in Apps:</b> {{ apps.length }}</p>
+      <p><b>ATS Exceptions:</b> {{ ats_exceptions.length }}</p>
 
       <div class="card">
         <div class="card-header">
@@ -13,7 +13,7 @@
           <thead>
           <tr>
             <th scope="col">Name</th>
-            <th scope="col">ATS Exception</th>
+            <th scope="col">ATS Exceptions</th>
             <th scope="col">Details</th>
           </tr>
           </thead>
