@@ -2,7 +2,7 @@ const {VueLoaderPlugin} = require("vue-loader");
 const path = require("path");
 
 module.exports = {
-    entry: ['./assets/js/app.js'],
+    entry: ['./assets/js/app.js', './assets/css/app.css'],
     output: {
         path: path.resolve(__dirname, 'static', 'js'),
         filename: 'main.js',
@@ -21,7 +21,14 @@ module.exports = {
             {
                 test: /\.vue$/,
                 loader: 'vue-loader'
-            }
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ]
+            },
         ],
     },
     plugins: [
