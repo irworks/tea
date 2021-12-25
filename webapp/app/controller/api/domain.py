@@ -1,7 +1,7 @@
 from flask import jsonify
 
 from webapp.app.controller.api.pagination import pagination_meta, paginate
-from webapp.app.models import Domain, app_domains
+from webapp.app.models import Domain, app_domains, IosApp, AppAtsExceptions
 
 
 class DomainController:
@@ -10,27 +10,33 @@ class DomainController:
         self.app = app
         self.db = db
 
-        self.apps_count = self.db.func.count().label('apps_count')
+        self.apps_count = self.db.func.count(app_domains.c.app_id).label('apps_count')
+        self.ats_exceptions_count = self.db.func.count(AppAtsExceptions.app_id).label('ats_exceptions_count')
 
     def build_result(self, domains):
         result = []
-        for domain, apps_count in domains:
+        for domain, apps_count, ats_exceptions_count in domains:
             app_dict = Domain.serialize(domain)
 
             app_dict['used_in_apps'] = apps_count
+            app_dict['ats_exceptions_count'] = ats_exceptions_count
             result.append(app_dict)
         return result
 
     def index(self):
-        domains = self.db.session.query(Domain, self.apps_count).outerjoin(app_domains).group_by(Domain.id).all()
+        domains = self.db.session.query(Domain, self.apps_count, self.ats_exceptions_count) \
+            .outerjoin(app_domains) \
+            .outerjoin(AppAtsExceptions) \
+            .group_by(Domain.id).all()
 
         return jsonify({
             'domains': self.build_result(domains)
         })
 
     def index_paginated(self, page):
-        query = self.db.session.query(Domain, self.apps_count)\
-            .outerjoin(app_domains)\
+        query = self.db.session.query(Domain, self.apps_count, self.ats_exceptions_count) \
+            .outerjoin(app_domains) \
+            .outerjoin(AppAtsExceptions) \
             .group_by(Domain.id)\
             .order_by(self.apps_count.desc())
 
@@ -39,6 +45,15 @@ class DomainController:
         return jsonify({
             'pagination': pagination_meta(domains),
             'domains': self.build_result(domains.items)
+        })
+
+    def show(self, domain_id):
+        domain = self.db.session.query(Domain).filter_by(id=domain_id).first()
+
+        return jsonify({
+            'domain': Domain.serialize(domain),
+            'apps': IosApp.serialize_list(domain.apps),
+            'ats_exceptions': AppAtsExceptions.serialize_list(domain.ats_exceptions),
         })
 
     '''

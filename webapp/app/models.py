@@ -34,7 +34,7 @@ class AppAtsExceptions(db.Model, Serializer):
 
     app = db.relationship("IosApp", back_populates="ats_exceptions")
     exception = db.relationship("AtsException")
-    domain = db.relationship("Domain")
+    domain = db.relationship("Domain", backref=db.backref('ats_exceptions', lazy=True))
 
     def __repr__(self):
         return '<appId-exceptionId {}-{}>'.format(self.app_id, self.exception_id)
@@ -48,6 +48,7 @@ class AppAtsExceptions(db.Model, Serializer):
             'exception_id': self.exception_id,
             'domain_id': self.domain_id,
             'domain': domain_out,
+            'app_id': self.app_id,
         }
 
 
