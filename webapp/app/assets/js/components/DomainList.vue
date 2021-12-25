@@ -1,4 +1,6 @@
 <template>
+  <domain v-if="currentDomain" v-bind="currentDomain"></domain>
+
   <h2>All Domains</h2>
   <p>
     <small>
@@ -47,9 +49,11 @@
 import ApiMixin from "./ApiMixin.js";
 import PaginationMixin from "./PaginationMixin.js";
 import {UrlHelper} from "./UrlHelper.js";
+import Domain from "./Domain.vue";
 
 export default {
   name: "DomainList",
+  components: {Domain},
   mixins: [ApiMixin, PaginationMixin],
   data() {
     return {
@@ -81,7 +85,12 @@ export default {
     },
     fetchDomainDetails(domainId) {
       this.fetchData(`/api/domains/${domainId}`).then((data) => {
-        console.log(data);
+        let domainModel = {};
+        Object.assign(domainModel, data.domain);
+        domainModel.apps = data.apps;
+        domainModel.ats_exceptions = data.ats_exceptions;
+
+        this.currentDomain = domainModel;
       });
     },
   },
