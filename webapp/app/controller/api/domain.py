@@ -1,6 +1,7 @@
 from flask import jsonify
 from sqlalchemy import distinct
 
+from webapp.app.controller.api.order import add_order_to_query
 from webapp.app.controller.api.pagination import pagination_meta, paginate
 from webapp.app.models import Domain, app_domains, IosApp, AppAtsExceptions
 
@@ -34,12 +35,16 @@ class DomainController:
             'domains': self.build_result(domains)
         })
 
-    def index_paginated(self, page):
+    def index_paginated(self, page, options):
         query = self.db.session.query(Domain, self.apps_count, self.ats_apps_count) \
             .outerjoin(app_domains) \
             .outerjoin(AppAtsExceptions) \
-            .group_by(Domain.id)\
-            .order_by(self.apps_count.desc())
+            .group_by(Domain.id)
+
+        query = add_order_to_query(query, options['order'], {
+            'apps_count': self.apps_count,
+            'ats_apps_count': self.ats_apps_count
+        })
 
         domains = paginate(query, page)
 

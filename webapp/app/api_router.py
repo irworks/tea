@@ -1,3 +1,5 @@
+from flask import request
+
 from webapp.app.controller.api.app import AppController
 from webapp.app.controller.api.ats_exceptions import AtsExceptionsController
 from webapp.app.controller.api.domain import DomainController
@@ -23,10 +25,10 @@ def api_routes(app, db):
         controller = DomainController(app, db)
         return controller.index()
 
-    @app.route('/api/domains/paginate/<int:page>')
+    @app.route('/api/domains/paginate/<int:page>', methods=['GET', 'POST'])
     def domains_index_paginated(page=1):
         controller = DomainController(app, db)
-        return controller.index_paginated(page)
+        return controller.index_paginated(page, request.json)
 
     @app.route('/api/domains/<int:domain_id>')
     def domain_show(domain_id=0):

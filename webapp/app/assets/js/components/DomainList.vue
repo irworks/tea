@@ -14,8 +14,8 @@
     <tr>
       <th scope="col">#</th>
       <th scope="col">Domain</th>
-      <th scope="col">Appears in Apps</th>
-      <th scope="col">Apps with ATS Exceptions</th>
+      <th scope="col">Appears in Apps <span @click="sort('apps_count')">{{ icon('apps_count') }}</span></th>
+      <th scope="col">Apps with ATS Exceptions <span @click="sort('ats_apps_count')">{{ icon('ats_apps_count') }}</span></th>
       <th scope="col">Details</th>
     </tr>
     </thead>
@@ -59,7 +59,11 @@ export default {
     return {
       initialLoadComplete: false,
       domains: {},
-      currentDomain: null
+      currentDomain: null,
+      sortOrder: {
+        apps_count: true,
+        ats_apps_count: false,
+      }
     }
   },
   methods: {
@@ -75,10 +79,25 @@ export default {
     prevPage() {
       this.fetchDomains(this.pagination.page - 1);
     },
+    sort(field) {
+      this.sortOrder[field] = !this.sortOrder[field];
+      this.fetchDomains(this.pagination.page);
+    },
+    icon(field) {
+      // TODO: Move to mixin!
+      if (!this.sortOrder.hasOwnProperty(field)) {
+        return '';
+      }
+
+      return this.sortOrder[field] ? '⬆️' : '⬇️';
+    },
     fetchDomains(page) {
       UrlHelper.setParameter('page', page);
+      let options = {
+        order: this.sortOrder
+      };
 
-      this.fetchData(`/api/domains/paginate/${page}`).then((data) => {
+      this.postData(`/api/domains/paginate/${page}`, options).then((data) => {
         this.domains = data.domains;
         this.pagination = data.pagination;
       });
