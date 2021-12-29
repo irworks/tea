@@ -145,9 +145,11 @@ class AtsException(db.Model, Serializer):
 
     parent = db.relationship("AtsException", uselist=False)
 
-    def __init__(self, key, state):
+    def __init__(self, key, state, description, documentation_url):
         self.key = key
         self.state = state
+        self.description = description
+        self.documentation_url = documentation_url
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -166,4 +168,6 @@ class AtsException(db.Model, Serializer):
             'state': state_value,
             'score': self.state,
             'parent_id': self.parent_id,
+            'description': self.description,
+            'documentation_url': self.documentation_url
         }

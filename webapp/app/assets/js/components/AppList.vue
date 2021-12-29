@@ -93,7 +93,9 @@ export default {
             status: atsEx.state,
             key: atsEx.key,
             domain: atsAppEx.domain,
-            parent: atsEx.parent_id
+            parent: atsEx.parent_id,
+            description: atsEx.description,
+            documentation_url: atsEx.documentation_url
           });
         }
 

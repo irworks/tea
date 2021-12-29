@@ -1,4 +1,24 @@
 <template>
+  <alert v-if="shouldShowAtsDetails" v-on:close="shouldShowAtsDetails = false" :title="currentAtsException.key">
+    <template v-slot:header>
+      {{ currentAtsException.key }}
+
+      <span class="badge rounded-pill" :class="stateClasses(currentAtsException.status)">
+         {{ currentAtsException.status }}
+       </span>
+    </template>
+
+     <template v-slot:default>
+       {{ currentAtsException.description }}
+     </template>
+
+    <template v-slot:footer>
+      <a :href="currentAtsException.documentation_url" target="_blank" class="btn btn-primary"> Documentation</a>
+     </template>
+  </alert>
+
+  <div v-if="shouldShowAtsDetails" class="modal-backdrop show"></div>
+
   <div class="card">
     <div class="card-header"><h2>{{ name }}</h2></div>
     <div class="card-body">
@@ -27,7 +47,10 @@
               </span></td>
             <td :class="paddingClasses(atsException)">{{ atsException.key }}</td>
             <td :class="paddingClasses(atsException)">{{ atsException.domain }}</td>
-            <td :class="paddingClasses(atsException)"><small>{{ "atsException.description" }}</small></td>
+            <td :class="paddingClasses(atsException)">
+              <small>
+                <button @click="showAtsDetails(atsException)" class="btn btn-sm btn-secondary">Learn more</button>
+            </small></td>
           </tr>
           </tbody>
         </table>
@@ -48,12 +71,20 @@
 </template>
 
 <script>
+import Alert from "./Alert.vue";
 export default {
   name: "App",
-  components: {},
-  props: ['id', 'name', 'bundle_id', 'binary', 'version', 'build', 'sdk', 'min_os', 'domains', 'ats'],
+  components: {Alert},
+  props: ['id', 'name', 'bundle_id', 'binary', 'version', 'build', 'sdk', 'min_ios', 'domains', 'ats'],
   data() {
-    return {}
+    return {
+      shouldShowAtsDetails: false,
+      currentAtsException: {
+        key: '',
+        description: '',
+        status: ''
+      },
+    }
   },
   methods: {
     stateClasses: function (state) {
@@ -72,6 +103,11 @@ export default {
 
       return '';
     },
+    showAtsDetails: function(atsException) {
+      this.currentAtsException = atsException;
+      console.log(atsException);
+      this.shouldShowAtsDetails = true;
+    }
   },
   computed: {},
   mounted() {
