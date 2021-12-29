@@ -12,9 +12,24 @@
 
       <div class="card">
         <div class="card-header">
-          Apps
+          ATS Exceptions for <b>{{ name }}</b>
         </div>
-        <table class="table">
+        <ul v-if="ats_exceptions.length > 0">
+          <li v-for="ats in ats_exceptions">
+            {{ ats }}
+          </li>
+        </ul>
+
+        <b v-else class="text-center mt-2 mb-2">
+          No ATS exceptions defined.
+        </b>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-header">
+          Apps containing <b>{{ name }}</b>
+        </div>
+        <table class="table" v-if="apps.length > 0">
           <thead>
           <tr>
             <th scope="col">Name</th>
@@ -26,21 +41,14 @@
           <tr v-for="app in apps">
             <td>{{ app.name }}</td>
             <td>{{ 'TODO' }}</td>
-            <td>{{ 'TODO' }}</td>
+            <td><a :href="'/apps?app=' + app.id" class="btn btn-primary">View App details</a></td>
           </tr>
           </tbody>
         </table>
 
-        <div class="card">
-          <div class="card-header">
-            ATS Exceptions
-          </div>
-          <ul>
-            <li v-for="ats in ats_exceptions">
-              {{ ats }}
-            </li>
-          </ul>
-        </div>
+        <b v-else class="text-center mt-2 mb-2">
+          No Apps found with this domain.
+        </b>
       </div>
     </div>
   </div>
