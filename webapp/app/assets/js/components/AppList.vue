@@ -1,9 +1,9 @@
 <template>
-  <div v-if="isLoadingData" class="alert alert-info shadow-sm position-fixed start-0 bottom-0 w-100">
+  <div v-if="isLoadingData" class="alert alert-info shadow-sm position-fixed start-0 bottom-0 w-100 fixed-bottom">
     <i class="spinner-border spinner-border-sm" role="status"></i> <span class="ms-2">Loading data...</span>
   </div>
 
-  <app v-if="currentApp" v-bind="currentApp"></app>
+  <app v-if="currentApp" v-bind="currentApp" v-on:close="deselectApp"></app>
 
   <div class="overall-stats" v-if="initialLoadComplete">
     <h2>Overview</h2>
@@ -45,6 +45,7 @@ import App from "./App.vue";
 import {PieChart} from "vue-chart-3";
 import {ArcElement, Chart, PieController, Tooltip} from "chart.js";
 import ApiMixin from "./ApiMixin.js";
+import {UrlHelper} from "./UrlHelper";
 
 export default {
   name: "AppList",
@@ -83,7 +84,13 @@ export default {
       this.fetchAppDetails(app.id).then((data) => {
         let appModel = {};
         Object.assign(appModel, app);
-        appModel.domains = data.domains;
+        this.assignAppModel(appModel, data);
+      });
+      window.scrollTo(0,0);
+      UrlHelper.setParameter('app', app.id);
+    },
+    assignAppModel(appModel, data) {
+      appModel.domains = data.domains;
 
         let appAts = [];
         for (const atsAppEx of data.ats_exceptions) {
@@ -101,8 +108,10 @@ export default {
 
         appModel.ats = appAts;
         this.currentApp = appModel;
-      });
-      window.scrollTo(0,0);
+    },
+    deselectApp() {
+      this.currentApp = null;
+      UrlHelper.setParameter('app', '');
     },
     icon(field) {
       if (!this.sortOrder.hasOwnProperty(field)) {
@@ -148,6 +157,13 @@ export default {
 
     this.fetchAtsExceptions();
     this.fetchApps();
+
+    let appId = UrlHelper.getParameter('app', -1);
+    if (appId > 0) {
+      this.fetchAppDetails(appId).then((data) => {
+        this.assignAppModel(data.app, data);
+      });
+    }
   },
 }
 </script>

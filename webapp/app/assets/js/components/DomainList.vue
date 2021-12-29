@@ -1,5 +1,5 @@
 <template>
-  <domain v-if="currentDomain" v-bind="currentDomain"></domain>
+  <domain v-if="currentDomain" v-bind="currentDomain" v-on:close="deselectDomain"></domain>
 
   <h2>All Domains</h2>
   <p>
@@ -103,19 +103,32 @@ export default {
       });
     },
     fetchDomainDetails(domainId) {
-      this.fetchData(`/api/domains/${domainId}`).then((data) => {
+      return this.fetchData(`/api/domains/${domainId}`).then((data) => {
         let domainModel = {};
         Object.assign(domainModel, data.domain);
-        domainModel.apps = data.apps;
-        domainModel.ats_exceptions = data.ats_exceptions;
-
-        this.currentDomain = domainModel;
+        this.assignDomainModel(domainModel, data);
+        UrlHelper.setParameter('domain', domainId);
       });
+    },
+    assignDomainModel(domainModel, data) {
+      domainModel.apps = data.apps;
+      domainModel.ats_exceptions = data.ats_exceptions;
+
+      this.currentDomain = domainModel;
+    },
+    deselectDomain() {
+      this.currentDomain = null;
+      UrlHelper.setParameter('domain', '');
     },
   },
   mounted() {
     this.pagination.page = UrlHelper.getParameter('page', 1);
     this.fetchDomains(this.pagination.page);
+
+    let domainId = UrlHelper.getParameter('domain', -1);
+    if (domainId > 0) {
+      this.fetchDomainDetails(domainId);
+    }
   }
 }
 </script>

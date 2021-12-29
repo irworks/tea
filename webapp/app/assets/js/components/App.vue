@@ -20,7 +20,10 @@
   <div v-if="shouldShowAtsDetails" class="modal-backdrop show"></div>
 
   <div class="card">
-    <div class="card-header"><h2>{{ name }}</h2></div>
+    <div class="card-header">
+      <h2 class="float-start">{{ name }}</h2>
+      <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close" @click="emitClose"></button>
+    </div>
     <div class="card-body">
       <p><b>Bundle Id:</b> {{ bundle_id }}</p>
       <p><b>Version:</b> {{ version }} ({{ build }})</p>
@@ -76,6 +79,7 @@ export default {
   name: "App",
   components: {Alert},
   props: ['id', 'name', 'bundle_id', 'binary', 'version', 'build', 'sdk', 'min_ios', 'domains', 'ats'],
+  emits: ['close'],
   data() {
     return {
       shouldShowAtsDetails: false,
@@ -105,8 +109,10 @@ export default {
     },
     showAtsDetails: function(atsException) {
       this.currentAtsException = atsException;
-      console.log(atsException);
       this.shouldShowAtsDetails = true;
+    },
+    emitClose: function () {
+      this.$emit('close');
     }
   },
   computed: {},
