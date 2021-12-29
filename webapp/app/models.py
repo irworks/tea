@@ -138,6 +138,8 @@ class AtsException(db.Model, Serializer):
     key = db.Column(db.String(128), nullable=False)
     description = db.Column(db.Text, nullable=True)
     documentation_url = db.Column(db.String(128), nullable=True)
+    # score for defining severity
+    score = db.Column(db.Integer, nullable=False)
 
     # map int to values = ['secure', 'info', 'warning', 'insecure']
     state = db.Column(db.Integer, nullable=False)
@@ -145,9 +147,10 @@ class AtsException(db.Model, Serializer):
 
     parent = db.relationship("AtsException", uselist=False)
 
-    def __init__(self, key, state, description, documentation_url):
+    def __init__(self, key, state, score, description, documentation_url):
         self.key = key
         self.state = state
+        self.score = score
         self.description = description
         self.documentation_url = documentation_url
 

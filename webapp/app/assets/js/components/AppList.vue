@@ -10,8 +10,10 @@
     <div class="chart-wrapper w-25 mb-2">
       <PieChart :chartData="chartData"/>
     </div>
-    <p>Analyzed <b>{{ count }}</b> apps. Of those <b>{{ countAppsWithAts }}</b> have ATS exceptions.</p>
-
+    <p>
+      Analyzed <b>{{ count }}</b> apps. Of those <b>{{ countAppsWithAts }}</b> have ATS exceptions.
+      Average security score is <b>{{ averageScore }}</b>. Total score is <b>{{ totalScore }}</b>.
+    </p>
     <hr>
   </div>
 
@@ -24,6 +26,7 @@
       <th scope="col">Version</th>
       <th scope="col">iOS</th>
       <th scope="col">ATS Exceptions <span @click="sort('ats')">{{ icon('ats') }}</span></th>
+      <th scope="col">Score <span @click="sort('score')">{{ icon('score') }}</span></th>
       <th scope="col">Details</th>
     </tr>
     </thead>
@@ -34,6 +37,7 @@
       <td>{{ app.version }} ({{ app.build }})</td>
       <td>iOS {{ app.min_ios }}+</td>
       <td>{{ app.ats }}</td>
+      <td>{{ app.score }}</td>
       <td><button class="btn btn-primary" @click="selectApp(app)">Details</button></td>
     </tr>
     </tbody>
@@ -59,10 +63,11 @@ export default {
       currentApp: null,
       sortOrder: {
         'ats': true,
-        'urls': true
+        'score': true
       },
       count: 0,
       countAppsWithAts: 0,
+      totalScore: 0
     }
   },
   computed: {
@@ -78,6 +83,9 @@ export default {
         ]
       }
     },
+    averageScore: function () {
+      return (this.totalScore / this.count).toFixed(2);
+    }
   },
   methods: {
     selectApp(app) {
@@ -141,10 +149,15 @@ export default {
     },
     fetchApps() {
       this.fetchData('/api/apps').then((data) => {
+        this.totalScore = 0;
         this.apps = data.apps;
 
         this.countAppsWithAts = data.ats_apps_count;
         this.count = this.apps.length;
+        for (let app of this.apps) {
+          this.totalScore += app.score;
+        }
+
         this.initialLoadComplete = true;
       });
     },
