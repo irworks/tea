@@ -7,8 +7,15 @@
 
   <div class="overall-stats" v-if="initialLoadComplete">
     <h2>Overview</h2>
-    <div class="chart-wrapper w-25 mb-2">
-      <PieChart :chartData="chartData"/>
+    <div class="chart-wrapper container">
+      <div class="row">
+        <div class="col">
+          <PieChart :chartData="chartData"/>
+        </div>
+        <div class="col">
+          <BarChart :chartData="scoreChartData"/>
+        </div>
+      </div>
     </div>
     <p>
       Analyzed <b>{{ count }}</b> apps. Of those <b>{{ countAppsWithAts }}</b> have ATS exceptions.
@@ -46,14 +53,23 @@
 
 <script>
 import App from "./App.vue";
-import {PieChart} from "vue-chart-3";
-import {ArcElement, Chart, PieController, Tooltip} from "chart.js";
+import {BarChart, PieChart} from "vue-chart-3";
+import {
+  ArcElement,
+  BarController,
+  BarElement,
+  CategoryScale,
+  Chart,
+  LinearScale,
+  PieController,
+  Tooltip
+} from "chart.js";
 import ApiMixin from "./ApiMixin.js";
 import {UrlHelper} from "./UrlHelper";
 
 export default {
   name: "AppList",
-  components: {PieChart, App},
+  components: {PieChart, BarChart, App},
   mixins: [ApiMixin],
   data() {
     return {
@@ -76,9 +92,20 @@ export default {
         labels: ["Apps without ATS exceptions", "Apps with ATS exceptions"],
         datasets: [
           {
-            label: "Data One",
             backgroundColor: ["#41B883", "#E46651"],
             data: [this.count - this.countAppsWithAts, this.countAppsWithAts]
+          }
+        ]
+      }
+    },
+    scoreChartData: function () {
+      return {
+        labels: this.apps.map(app => app.name),
+        datasets: [
+          {
+            label: "Security Score",
+            backgroundColor: ["#41B883", "#E46651"],
+            data: this.apps.map(app => app.score)
           }
         ]
       }
@@ -166,7 +193,7 @@ export default {
     },
   },
   created() {
-    Chart.register(PieController, ArcElement, Tooltip);
+    Chart.register(PieController, ArcElement, Tooltip, BarController, CategoryScale, LinearScale, BarElement);
 
     this.fetchAtsExceptions();
     this.fetchApps();
