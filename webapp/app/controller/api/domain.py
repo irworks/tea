@@ -57,7 +57,7 @@ class DomainController:
         return jsonify({
             'domain': Domain.serialize(domain),
             'apps': IosApp.serialize_list(domain.apps),
-            'ats_exceptions': AppAtsExceptions.serialize_list(domain.ats_exceptions),
+            'ats_exceptions': AppAtsExceptions.serialize_list(domain.ats_exceptions, include_relations=True),
         })
 
     '''

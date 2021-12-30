@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card shadow shadow-sm">
     <div class="card-header">
       <h2 class="float-start">{{ name }}</h2>
       <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"
@@ -14,12 +14,24 @@
         <div class="card-header">
           ATS Exceptions for <b>{{ name }}</b>
         </div>
-        <ul v-if="ats_exceptions.length > 0">
-          <li v-for="ats in ats_exceptions">
-            {{ ats }}
-          </li>
-        </ul>
-
+        <table class="table" v-if="ats_exceptions.length > 0">
+          <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Bundle Id</th>
+            <th scope="col">Exception</th>
+            <th scope="col">Details</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="ats in ats_exceptions">
+            <td>{{ ats.app.name }}</td>
+            <td>{{ ats.app.bundle_id }}</td>
+            <td>{{ ats.exception.key }}</td>
+            <td><a :href="'/apps?app=' + ats.app.id" class="btn btn-primary">View App details</a></td>
+          </tr>
+          </tbody>
+        </table>
         <b v-else class="text-center mt-2 mb-2">
           No ATS exceptions defined.
         </b>
@@ -33,14 +45,14 @@
           <thead>
           <tr>
             <th scope="col">Name</th>
-            <th scope="col">ATS Exceptions</th>
+            <th scope="col">Bundle Id</th>
             <th scope="col">Details</th>
           </tr>
           </thead>
           <tbody>
           <tr v-for="app in apps">
             <td>{{ app.name }}</td>
-            <td>{{ 'TODO' }}</td>
+            <td>{{ app.bundle_id }}</td>
             <td><a :href="'/apps?app=' + app.id" class="btn btn-primary">View App details</a></td>
           </tr>
           </tbody>

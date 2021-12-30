@@ -3,9 +3,11 @@
     <template v-slot:header>
       {{ currentAtsException.key }}
 
+      <small>
       <span class="badge rounded-pill" :class="stateClasses(currentAtsException.status)">
          {{ currentAtsException.status }}
        </span>
+      </small>
     </template>
 
      <template v-slot:default>
@@ -19,7 +21,7 @@
 
   <div v-if="shouldShowAtsDetails" class="modal-backdrop show"></div>
 
-  <div class="card">
+  <div class="card shadow shadow-sm">
     <div class="card-header">
       <h2 class="float-start">{{ name }}</h2>
       <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close" @click="emitClose"></button>

@@ -7,12 +7,12 @@ from sqlalchemy.inspection import inspect
 
 class Serializer(object):
 
-    def serialize(self):
+    def serialize(self, include_relations=False):
         return {c: getattr(self, c) for c in inspect(self).attrs.keys()}
 
     @staticmethod
-    def serialize_list(l):
-        return [m.serialize() for m in l]
+    def serialize_list(l, include_relations=False):
+        return [m.serialize(include_relations) for m in l]
 
 
 app_urls = db.Table('app_url',
@@ -32,24 +32,30 @@ class AppAtsExceptions(db.Model, Serializer):
     exception_id = db.Column(db.ForeignKey('ats_exceptions.id'), primary_key=True)
     domain_id = db.Column(db.Integer, db.ForeignKey('domains.id'), nullable=True, primary_key=True)
 
-    app = db.relationship("IosApp", back_populates="ats_exceptions")
-    exception = db.relationship("AtsException")
-    domain = db.relationship("Domain", backref=db.backref('ats_exceptions', lazy=True))
+    app = db.relationship("IosApp", back_populates="ats_exceptions", uselist=False)
+    exception = db.relationship("AtsException", back_populates="ats_exceptions", uselist=False)
+    domain = db.relationship("Domain", backref=db.backref('ats_exceptions', lazy=True), uselist=False)
 
     def __repr__(self):
         return '<appId-exceptionId {}-{}>'.format(self.app_id, self.exception_id)
 
-    def serialize(self):
+    def serialize(self, include_relations=False):
         domain_out = None
         if self.domain_id:
             domain_out = self.domain.name
 
-        return {
+        data = {
             'exception_id': self.exception_id,
             'domain_id': self.domain_id,
             'domain': domain_out,
-            'app_id': self.app_id,
+            'app_id': self.app_id
         }
+
+        if include_relations:
+            data['app'] = IosApp.serialize(self.app)
+            data['exception'] = AtsException.serialize(self.exception)
+
+        return data
 
 
 class IosApp(db.Model, Serializer):
@@ -81,7 +87,7 @@ class IosApp(db.Model, Serializer):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
-    def serialize(self):
+    def serialize(self, include_relations=False):
         return {
             'id': self.id,
             'name': self.name,
@@ -105,7 +111,7 @@ class Domain(db.Model, Serializer):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
-    def serialize(self):
+    def serialize(self, include_relations=False):
         return {
             'id': self.id,
             'name': self.name
@@ -124,7 +130,7 @@ class Url(db.Model, Serializer):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
-    def serialize(self):
+    def serialize(self, include_relations=False):
         return {
             'id': self.id,
             'path': self.path
@@ -146,6 +152,7 @@ class AtsException(db.Model, Serializer):
     parent_id = db.Column(db.Integer, db.ForeignKey('ats_exceptions.id'), nullable=True)
 
     parent = db.relationship("AtsException", uselist=False)
+    ats_exceptions = db.relationship('AppAtsExceptions', back_populates='exception')
 
     def __init__(self, key, state, score, description, documentation_url):
         self.key = key
@@ -157,7 +164,7 @@ class AtsException(db.Model, Serializer):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
-    def serialize(self):
+    def serialize(self, include_relations=False):
         state_values = ['secure', 'info', 'warning', 'insecure']
         state_value = 'unknown'
         try:
