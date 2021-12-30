@@ -35,7 +35,7 @@
         <div class="card-header">
           ATS Exceptions
         </div>
-        <table class="table">
+        <table class="table" v-if="ats.length > 0">
           <thead>
           <tr>
             <th scope="col">State</th>
@@ -59,18 +59,24 @@
           </tr>
           </tbody>
         </table>
+        <b v-else class="text-center mt-2 mb-2">
+          No ATS exceptions defined.
+        </b>
+        </div>
 
-        <div class="card">
+        <div class="card mt-4">
           <div class="card-header">
             Domains
           </div>
-          <ul>
+          <ul v-if="domains.length > 0">
             <li v-for="domain in domains">
-              {{ domain.name }}
+              <a :href="'/domains?domain=' + domain.id" target="_blank">{{ domain.name }}</a>
             </li>
           </ul>
+          <b v-else class="text-center mt-2 mb-2">
+          No domains found in this app.
+        </b>
         </div>
-      </div>
     </div>
   </div>
 </template>

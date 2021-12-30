@@ -76,7 +76,7 @@ class DomainController:
         rows = self.db.engine.execute(query)
         result = {}
 
-        # build an results set with domain_id => {domain_name: '', apps: []}
+        # build a results set with domain_id => {domain_name: '', apps: []}
         for app_id, domain_id, domain_name, app_name in rows:
             if domain_id not in result:
                 result[domain_id] = {

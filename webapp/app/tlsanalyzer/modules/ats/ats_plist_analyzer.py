@@ -21,7 +21,7 @@ def check_transport_security(p_list):
                     'connections are also allowed, and are still subject '
                     'to default server trust evaluation. However, '
                     'extended security checks like requiring a minimum '
-                    'Transport Layer Security (TLS) protocol version—are '
+                    'Transport Layer Security (TLS) protocol version are '
                     'disabled. This setting is not applicable to domains '
                     'listed in NSExceptionDomains.'),
             })
