@@ -31,6 +31,8 @@
       <p><b>Version:</b> {{ version }} ({{ build }})</p>
       <p><b>SDK:</b> {{ sdk }}</p>
 
+      <app-store-meta :bundle_id="bundle_id"></app-store-meta>
+
       <div class="card">
         <div class="card-header">
           ATS Exceptions
@@ -83,10 +85,11 @@
 
 <script>
 import Alert from "./Alert.vue";
+import AppStoreMeta from "./AppStoreMeta.vue";
 export default {
   name: "App",
-  components: {Alert},
-  props: ['id', 'name', 'bundle_id', 'binary', 'version', 'build', 'sdk', 'min_ios', 'domains', 'ats'],
+  components: {AppStoreMeta, Alert},
+  props: ['id', 'name', 'bundle_id', 'binary', 'version', 'build', 'sdk', 'min_ios', 'domains', 'ats', 'score'],
   emits: ['close'],
   data() {
     return {
