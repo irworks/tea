@@ -1,4 +1,8 @@
 <template>
+    <div v-if="isLoadingData" class="alert alert-info shadow-sm position-fixed start-0 bottom-0 w-100 fixed-bottom">
+    <i class="spinner-border spinner-border-sm" role="status"></i> <span class="ms-2">Loading data...</span>
+  </div>
+
   <domain v-if="currentDomain" v-bind="currentDomain" v-on:close="deselectDomain"></domain>
 
   <h2>All Domains</h2>
