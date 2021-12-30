@@ -25,21 +25,19 @@ class DomainController:
             result.append(app_dict)
         return result
 
-    def index(self):
-        domains = self.db.session.query(Domain, self.apps_count, self.ats_apps_count) \
-            .outerjoin(app_domains) \
-            .outerjoin(AppAtsExceptions) \
-            .group_by(Domain.id).all()
-
-        return jsonify({
-            'domains': self.build_result(domains)
-        })
-
-    def index_paginated(self, page, options):
-        query = self.db.session.query(Domain, self.apps_count, self.ats_apps_count) \
+    def all_domains(self):
+        return self.db.session.query(Domain, self.apps_count, self.ats_apps_count) \
             .outerjoin(app_domains) \
             .outerjoin(AppAtsExceptions) \
             .group_by(Domain.id)
+
+    def index(self):
+        return jsonify({
+            'domains': self.build_result(self.all_domains().all())
+        })
+
+    def index_paginated(self, page, options):
+        query = self.all_domains()
 
         query = add_order_to_query(query, options['order'], {
             'apps_count': self.apps_count,
