@@ -53,7 +53,9 @@
                 {{ atsException.status }}
               </span></td>
             <td :class="paddingClasses(atsException)">{{ atsException.key }}</td>
-            <td :class="paddingClasses(atsException)">{{ atsException.domain }}</td>
+            <td :class="paddingClasses(atsException)">
+              <a :href="'/domains?domain=' + atsException.domain_id" target="_blank">{{ atsException.domain }}</a>
+            </td>
             <td :class="paddingClasses(atsException)">
               <small>
                 <button @click="showAtsDetails(atsException)" class="btn btn-sm btn-secondary">Learn more</button>

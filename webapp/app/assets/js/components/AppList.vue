@@ -135,6 +135,7 @@ export default {
             status: atsEx.state,
             key: atsEx.key,
             domain: atsAppEx.domain,
+            domain_id: atsAppEx.domain_id,
             parent: atsEx.parent_id,
             description: atsEx.description,
             documentation_url: atsEx.documentation_url
