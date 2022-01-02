@@ -16,11 +16,11 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 migrate = Migrate()
 
-from webapp.app.models import *
-from webapp.app.tlsanalyzer.app import App
+from app.models import *
+from app.tlsanalyzer.app import App
 
-from webapp.app.web_router import web_routes
-from webapp.app.api_router import api_routes
+from app.web_router import web_routes
+from app.api_router import api_routes
 
 
 # Application Factory
@@ -28,7 +28,7 @@ def create_app():
     app = Flask(__name__)
 
     # Configure the flask app instance
-    config_type = os.getenv('CONFIG_TYPE', default='webapp.config.DevelopmentConfig')
+    config_type = os.getenv('CONFIG_TYPE', default='config.DevelopmentConfig')
     app.config.from_object(config_type)
 
     # Initialize flask extension objects

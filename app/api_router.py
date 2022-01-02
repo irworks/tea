@@ -1,8 +1,8 @@
 from flask import request
 
-from webapp.app.controller.api.app import AppController
-from webapp.app.controller.api.ats_exceptions import AtsExceptionsController
-from webapp.app.controller.api.domain import DomainController
+from app.controller.api.app import AppController
+from app.controller.api.ats_exceptions import AtsExceptionsController
+from app.controller.api.domain import DomainController
 
 
 def api_routes(app, db):

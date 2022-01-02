@@ -2,11 +2,11 @@ import logging
 import os.path
 
 from urllib.parse import urlparse
-from webapp.app.models import IosApp, Url, Domain, AppAtsExceptions
-from webapp.app.tlsanalyzer.extractor import Extractor
-from webapp.app.tlsanalyzer.helper.hash import calculate_hash
-from webapp.app.tlsanalyzer.modules.info_plist_analyzer import InfoPlistAnalyzer
-from webapp.app.tlsanalyzer.modules.url_extractor import UrlExtractor
+from app.models import IosApp, Url, Domain, AppAtsExceptions
+from app.tlsanalyzer.extractor import Extractor
+from app.tlsanalyzer.helper.hash import calculate_hash
+from app.tlsanalyzer.modules.info_plist_analyzer import InfoPlistAnalyzer
+from app.tlsanalyzer.modules.url_extractor import UrlExtractor
 
 
 class Analyzer:
@@ -44,12 +44,16 @@ class Analyzer:
         app = IosApp.query.filter_by(file_hash=file_hash).first()
         if app is None:
             app = IosApp(file_hash, '', '', '', '', '', 0)
-
-        '''
         else:
-        self.db.session.query(AppAtsExceptions).filter(AppAtsExceptions.app_id == app.id).delete()
-        self.db.session.commit()
-        '''
+            # Bad Hack: Clear out current ats_app_exceptions data to prevent duplicates
+            '''
+            The reasoning behind this is that appending app_ats_exceptions models a second time does not trigger an update,
+            SQLAlchemy always tries to insert which is a UNIQUE condition violation.
+            Suspected reason for this behaviour is the specific AppAtsExceptions model which is explicitly
+            instantiated and presumably considered as always a new entry.   
+            '''
+            # self.db.session.query(AppAtsExceptions).filter(AppAtsExceptions.app_id == app.id).delete()
+            # self.db.session.commit()
 
         self.info_plist_results = self.analyze_info_plist(app_path)
 

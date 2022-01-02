@@ -1,6 +1,9 @@
+import logging
+import time
+
 from flask import jsonify
 
-from webapp.app.models import IosApp, Domain, Url, AppAtsExceptions, AtsException
+from app.models import IosApp, Domain, Url, AppAtsExceptions, AtsException
 
 
 class AppController:
@@ -10,6 +13,8 @@ class AppController:
         self.db = db
 
     def index(self):
+        start_time = time.time()
+        logging.warning(f'Starting index call: {start_time}')
         # select all apps and their corresponding count of ats exceptions
         ats_label = self.db.func.count(AppAtsExceptions.app_id).label('ats')
         score_label = self.db.func.sum(AtsException.score).label('ats_score')
@@ -18,11 +23,16 @@ class AppController:
             outerjoin(AtsException, AtsException.id == AppAtsExceptions.exception_id). \
             group_by(IosApp.id).all()
 
+        duration = time.time() - start_time
+        logging.warning(f'Fetched all data, took: {duration}')
+
         # build result models by appending the ats counts
         result = {
             'ats_apps_count': 0,
             'apps': []
         }
+        logging.warning(f'Building results...')
+
         for app, ats_count, score in apps:
             app_dict = IosApp.serialize(app)
             if ats_count > 0:
@@ -32,6 +42,8 @@ class AppController:
             app_dict['score'] = score or 0
             result['apps'].append(app_dict)
 
+        duration = time.time() - start_time
+        logging.warning(f'Devlivering, took: {duration}')
         return jsonify(result)
 
     '''

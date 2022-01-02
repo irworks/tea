@@ -25,7 +25,7 @@
   </div>
 
   <h2>App results</h2>
-  <table class="table">
+  <table class="table table-responsive">
     <thead>
     <tr>
       <th scope="col">#</th>

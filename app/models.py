@@ -1,6 +1,6 @@
 import logging
 
-from webapp.app.start import db
+from app.start import db
 
 from sqlalchemy.inspection import inspect
 

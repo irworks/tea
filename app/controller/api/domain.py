@@ -1,9 +1,9 @@
 from flask import jsonify
 from sqlalchemy import distinct
 
-from webapp.app.controller.api.order import add_order_to_query
-from webapp.app.controller.api.pagination import pagination_meta, paginate
-from webapp.app.models import Domain, app_domains, IosApp, AppAtsExceptions
+from app.controller.api.order import add_order_to_query
+from app.controller.api.pagination import pagination_meta, paginate
+from app.models import Domain, app_domains, IosApp, AppAtsExceptions
 
 
 class DomainController:

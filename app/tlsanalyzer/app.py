@@ -2,9 +2,9 @@ import json
 import logging
 import time
 
-from webapp.app.models import Url, Domain, AtsException, AppAtsExceptions
-from webapp.app.tlsanalyzer.analyzer import Analyzer
-from webapp.app.tlsanalyzer.collector import Collector
+from app.models import Url, Domain, AtsException, AppAtsExceptions
+from app.tlsanalyzer.analyzer import Analyzer
+from app.tlsanalyzer.collector import Collector
 
 
 class App:

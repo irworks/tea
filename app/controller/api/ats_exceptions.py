@@ -1,6 +1,6 @@
 from flask import jsonify
 
-from webapp.app.models import AtsException
+from app.models import AtsException
 
 
 class AtsExceptionsController:

@@ -1,4 +1,4 @@
-from webapp.app.controller.index import IndexController
+from app.controller.index import IndexController
 
 
 def web_routes(app):
