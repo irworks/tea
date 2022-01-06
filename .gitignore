@@ -1,6 +1,6 @@
 venv/
-webapp/app/tlsanalyzer/results.json
+app/tlsanalyzer/results.json
 .DS_Store
 .idea/
-webapp/app/node_modules
+app/node_modules
 /webapp/app/static/
