@@ -1,9 +1,6 @@
-import logging
-import time
-
 from flask import jsonify
 
-from app.models import IosApp, Domain, Url, AppAtsExceptions, AtsException
+from app.models import IosApp, Domain, Url, AppAtsExceptions
 
 
 class AppController:
@@ -13,37 +10,49 @@ class AppController:
         self.db = db
 
     def index(self):
-        start_time = time.time()
-        logging.warning(f'Starting index call: {start_time}')
         # select all apps and their corresponding count of ats exceptions
+        """
+        Funny enough the naive approach of building the query using the ORM system
+        it takes forever (300 rows in ~3 seconds). Running the raw query takes around 0.09 seconds.
+
         ats_label = self.db.func.count(AppAtsExceptions.app_id).label('ats')
         score_label = self.db.func.sum(AtsException.score).label('ats_score')
+
         apps = self.db.session.query(IosApp, ats_label, score_label). \
             outerjoin(AppAtsExceptions, AppAtsExceptions.app_id == IosApp.id). \
             outerjoin(AtsException, AtsException.id == AppAtsExceptions.exception_id). \
-            group_by(IosApp.id).all()
+            group_by(IosApp.id)
+        """
 
-        duration = time.time() - start_time
-        logging.warning(f'Fetched all data, took: {duration}')
+        query = "SELECT apps.id AS id, apps.name AS name," \
+                " apps.bundle_id AS bundle_id, apps.version AS version, apps.build AS build," \
+                " apps.sdk AS sdk, apps.min_ios AS min_ios," \
+                " count(app_ats_exceptions.app_id) AS ats," \
+                " sum(ats_exceptions.score) AS score" \
+                " FROM apps" \
+                " LEFT OUTER JOIN app_ats_exceptions ON app_ats_exceptions.app_id = apps.id" \
+                " LEFT OUTER JOIN ats_exceptions ON ats_exceptions.id = app_ats_exceptions.exception_id" \
+                " GROUP BY apps.id"
+
+        rows = self.db.engine.execute(query)
+        # convert to a RowMapping
+        results_as_dict = rows.mappings().all()
 
         # build result models by appending the ats counts
         result = {
             'ats_apps_count': 0,
             'apps': []
         }
-        logging.warning(f'Building results...')
 
-        for app, ats_count, score in apps:
-            app_dict = IosApp.serialize(app)
-            if ats_count > 0:
+        for app in results_as_dict:
+            if app['ats'] > 0:
                 result['ats_apps_count'] += 1
 
-            app_dict['ats'] = ats_count
-            app_dict['score'] = score or 0
-            result['apps'].append(app_dict)
+            # convert RowMapping to an actual python dict
+            app = dict(app)
+            app['score'] = app['score'] or 0
+            result['apps'].append(app)
 
-        duration = time.time() - start_time
-        logging.warning(f'Devlivering, took: {duration}')
         return jsonify(result)
 
     '''
