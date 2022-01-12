@@ -24,7 +24,7 @@ class AppController:
             group_by(IosApp.id)
         """
 
-        query = "SELECT apps.id AS id, apps.name AS name," \
+        query = "SELECT apps.id AS id, apps.name AS name, apps.genre_name AS genre_name," \
                 " apps.bundle_id AS bundle_id, apps.version AS version, apps.build AS build," \
                 " apps.sdk AS sdk, apps.min_ios AS min_ios," \
                 " count(app_ats_exceptions.app_id) AS ats," \

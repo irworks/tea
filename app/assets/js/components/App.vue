@@ -30,6 +30,7 @@
       <p><b>Bundle Id:</b> {{ bundle_id }}</p>
       <p><b>Version:</b> {{ version }} ({{ build }})</p>
       <p><b>SDK:</b> {{ sdk }}</p>
+      <p><b>Genre:</b> {{ genre_name }}</p>
 
       <app-store-meta :bundle_id="bundle_id"></app-store-meta>
 
@@ -91,7 +92,7 @@ import AppStoreMeta from "./AppStoreMeta.vue";
 export default {
   name: "App",
   components: {AppStoreMeta, Alert},
-  props: ['id', 'name', 'bundle_id', 'binary', 'version', 'build', 'sdk', 'min_ios', 'domains', 'ats', 'score'],
+  props: ['id', 'name', 'bundle_id', 'binary', 'version', 'build', 'sdk', 'min_ios', 'domains', 'ats', 'score', 'genre_name'],
   emits: ['close'],
   data() {
     return {

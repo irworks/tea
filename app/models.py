@@ -98,7 +98,8 @@ class IosApp(db.Model, Serializer):
             'version': self.version,
             'build': self.build,
             'sdk': self.sdk,
-            'min_ios': self.min_ios
+            'min_ios': self.min_ios,
+            'genre_name': self.genre_name
         }
 
 
