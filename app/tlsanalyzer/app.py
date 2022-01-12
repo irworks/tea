@@ -47,8 +47,8 @@ class App:
         Suspected reason for this behaviour is the specific AppAtsExceptions model which is explicitly
         instantiated and presumably considered as always a new entry.   
         '''
-        self.db.session.query(AppAtsExceptions).delete()
-        self.db.session.commit()
+        # self.db.session.query(AppAtsExceptions).delete()
+        # self.db.session.commit()
 
         ats_exceptions = 0
         for app in apps:

@@ -52,8 +52,8 @@ class Analyzer:
             Suspected reason for this behaviour is the specific AppAtsExceptions model which is explicitly
             instantiated and presumably considered as always a new entry.   
             '''
-            # self.db.session.query(AppAtsExceptions).filter(AppAtsExceptions.app_id == app.id).delete()
-            # self.db.session.commit()
+            self.db.session.query(AppAtsExceptions).filter(AppAtsExceptions.app_id == app.id).delete()
+            self.db.session.commit()
 
         self.info_plist_results = self.analyze_info_plist(app_path)
 
