@@ -18,6 +18,7 @@ migrate = Migrate()
 
 from app.models import *
 from app.tlsanalyzer.app import App
+from app.tlsanalyzer.meta_fetcher import MetaFetcher
 
 from app.web_router import web_routes
 from app.api_router import api_routes
@@ -60,6 +61,13 @@ def register_cli_commands(app):
 
         tls_app = App(work_dir=work_dir, output_file="results.json", rescan_urls=False, db=db)
         tls_app.run()
+
+    @app.cli.command("fetch-meta")
+    def fetch_apps_meta():
+        logging.basicConfig(level='INFO', format='%(asctime)s %(levelname)s [%(module)s] %(message)s',
+                            datefmt='%H:%M:%S')
+        meta_fetcher = MetaFetcher(db=db)
+        meta_fetcher.run()
 
 
 def register_routes(app):

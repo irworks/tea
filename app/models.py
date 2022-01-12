@@ -69,6 +69,9 @@ class IosApp(db.Model, Serializer):
     build = db.Column(db.String(32), nullable=False)
     sdk = db.Column(db.String(16), nullable=False)
     min_ios = db.Column(db.Float, nullable=False)
+    genre_id = db.Column(db.Integer, nullable=True)
+    genre_name = db.Column(db.String(64), nullable=True)
+
     urls = db.relationship('Url', secondary=app_urls, lazy='subquery',
         backref=db.backref('apps', lazy=True))
     domains = db.relationship('Domain', secondary=app_domains, lazy='subquery',
