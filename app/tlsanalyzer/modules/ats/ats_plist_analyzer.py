@@ -145,7 +145,11 @@ def check_transport_security(p_list):
                 old_tls = 'NSTemporaryExceptionMinimumTLSVersion'
                 inc_min_tls = (config.get('NSExceptionMinimumTLSVersion', None)
                                or config.get(old_tls, None))
-                if inc_min_tls in ['TLSv1.0', 'TLSv1.1']:
+
+                if inc_min_tls is None:
+                    pass
+
+                elif inc_min_tls in ['TLSv1.0', 'TLSv1.1']:
                     findings = {
                         'key': ('NSExceptionMinimumTLSVersion-{}'.format(inc_min_tls)),
                         'domain': format(domain),
@@ -162,9 +166,9 @@ def check_transport_security(p_list):
                     }
                     ats.append(findings)
 
-                elif inc_min_tls == 'TLSv1.2':
+                elif inc_min_tls.lower() == 'tlsv1.2':
                     findings = {
-                        'key': ('NSExceptionMinimumTLSVersion-{}'.format(inc_min_tls)),
+                        'key': 'NSExceptionMinimumTLSVersion-TLSv1.2',
                         'domain': format(domain),
                         'issue': ('NSExceptionMinimumTLSVersion set to {}'
                                   ' on {}'.format(inc_min_tls, domain)),
@@ -196,9 +200,6 @@ def check_transport_security(p_list):
                         ),
                     }
                     ats.append(findings)
-
-                elif inc_min_tls is None:
-                    pass
 
                 else:
                     findings = {
