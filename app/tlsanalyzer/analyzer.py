@@ -1,5 +1,6 @@
 import logging
 import os.path
+import shutil
 
 from urllib.parse import urlparse
 from app.models import IosApp, Url, Domain, AppAtsExceptions
@@ -11,13 +12,16 @@ from app.tlsanalyzer.modules.url_extractor import UrlExtractor
 
 class Analyzer:
 
-    def __init__(self, work_dir, ipa_file, rescan_urls, num, total_count, db, all_urls, all_domains, all_ats_exceptions):
+    def __init__(self, work_dir, ipa_file, rescan_urls, num, total_count, db, cleanup,
+                 all_urls, all_domains, all_ats_exceptions):
         self.work_dir = work_dir
         self.ipa_file = ipa_file
         self.rescan_urls = rescan_urls
         self.num = num
         self.total_count = total_count
         self.db = db
+        self.cleanup = cleanup
+
         self.all_urls = all_urls
         self.all_domains = all_domains
         self.all_ats_exceptions = all_ats_exceptions
@@ -131,6 +135,12 @@ class Analyzer:
         app.min_ios = results['min_os']
 
         self.db.session.add(app)
+
+        if self.cleanup:
+            self.clean_files(extractor)
+
+    def clean_files(self, extractor):
+        shutil.rmtree(extractor.create_temp_dir())
 
     '''
     Extract app base information and ATS rules from Info.plist

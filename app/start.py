@@ -49,7 +49,8 @@ def register_cli_commands(app):
     @app.cli.command("analyze")
     @click.option("-w", "--work-dir", required=True, type=dir_path)
     @click.option("-v", "--verbosity", default='INFO')
-    def analyze(work_dir, verbosity):
+    @click.option("-c", "--cleanup", default=False)
+    def analyze(work_dir, verbosity, cleanup):
         log_options = ['INFO', 'WARNING', 'DEBUG']
         if verbosity not in log_options:
             return False
@@ -59,7 +60,7 @@ def register_cli_commands(app):
                             datefmt='%H:%M:%S')
         logging.info('Starting up...')
 
-        tls_app = App(work_dir=work_dir, output_file="results.json", rescan_urls=False, db=db)
+        tls_app = App(work_dir=work_dir, output_file="results.json", rescan_urls=False, db=db, cleanup=cleanup)
         tls_app.run()
 
         meta_fetcher = MetaFetcher(db=db)

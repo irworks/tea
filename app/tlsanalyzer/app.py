@@ -2,18 +2,20 @@ import json
 import logging
 import time
 
-from app.models import Url, Domain, AtsException, AppAtsExceptions
+from app.models import Url, Domain, AtsException
 from app.tlsanalyzer.analyzer import Analyzer
 from app.tlsanalyzer.collector import Collector
 
 
 class App:
 
-    def __init__(self, work_dir, output_file, rescan_urls, db):
+    def __init__(self, work_dir, output_file, rescan_urls, db, cleanup):
         self.work_dir = work_dir
         self.output_file = output_file
         self.rescan_urls = rescan_urls
         self.db = db
+        self.cleanup = cleanup
+
         self.all_urls_dict = {}
         self.all_domains_dict = {}
         self.all_ats_exceptions = {}
@@ -52,7 +54,7 @@ class App:
 
         ats_exceptions = 0
         for app in apps:
-            analyzer = Analyzer(self.work_dir, app, self.rescan_urls, num, total_count, self.db,
+            analyzer = Analyzer(self.work_dir, app, self.rescan_urls, num, total_count, self.db, self.cleanup,
                                 self.all_urls_dict, self.all_domains_dict, self.all_ats_exceptions)
             num += 1
             if analyzer.ats_exceptions():
