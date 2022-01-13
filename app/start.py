@@ -62,6 +62,9 @@ def register_cli_commands(app):
         tls_app = App(work_dir=work_dir, output_file="results.json", rescan_urls=False, db=db)
         tls_app.run()
 
+        meta_fetcher = MetaFetcher(db=db)
+        meta_fetcher.run()
+
     @app.cli.command("fetch-meta")
     def fetch_apps_meta():
         logging.basicConfig(level='INFO', format='%(asctime)s %(levelname)s [%(module)s] %(message)s',
