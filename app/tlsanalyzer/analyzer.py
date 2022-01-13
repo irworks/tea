@@ -111,13 +111,16 @@ class Analyzer:
 
                 domain_model = self.all_domains[domain]
 
-            aae = AppAtsExceptions()
-            aae.exception = self.all_ats_exceptions[key]
-            aae.app = app
-            if domain_model:
-                aae.domain = domain_model
+            if key in self.all_ats_exceptions:
+                aae = AppAtsExceptions()
+                aae.exception = self.all_ats_exceptions[key]
+                aae.app = app
+                if domain_model:
+                    aae.domain = domain_model
 
-            self.db.session.add(aae)
+                self.db.session.add(aae)
+            else:
+                logging.warning(f'Skipping invalid ATS exception {key}.')
 
         # Prepare database model
         app.name = results['name']
