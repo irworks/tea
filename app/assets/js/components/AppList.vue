@@ -7,6 +7,7 @@
 
   <div class="overall-stats" v-if="initialLoadComplete">
     <h2>Overview</h2>
+
     <div class="chart-wrapper container">
       <div class="row">
         <div class="col">
@@ -17,8 +18,15 @@
         </div>
       </div>
     </div>
+    <h4>What is this all about?</h4>
     <p>
-      Analyzed <b>{{ count }}</b> apps. Of those <b>{{ countAppsWithAts }}</b> have ATS exceptions.
+      This tool analyzes iOS (if applicable also iPadOS and tvOS compatible) apps according to their <a
+      href="https://developer.apple.com/documentation/security/preventing_insecure_network_connections" target="_blank">App
+      Transport Security (ATS)</a> exceptions.<br>
+      The apps are obtained from the official App Store based on the list of most popular apps in each category.
+    </p>
+    <p>
+      Analyzed <b>{{ count }}</b> apps. Of those <b>{{ countAppsWithAts }}</b> apps have ATS exceptions.
       Average security score is <b>{{ averageScore }}</b>. Total score is <b>{{ totalScore }}</b>.
     </p>
     <hr>

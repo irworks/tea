@@ -7,6 +7,10 @@
 
   <h2>All Domains</h2>
   <p>
+    This is a list of all extracted domains. Domains are extracted from the binaries, metadata and other resources
+    included in the apps' bundles.
+  </p>
+  <p>
     <small>
     You are on page <b>{{ pagination.page }}</b> of <b>{{ pagination.pages }}</b>.
     In total <b>{{ pagination.total }}</b> domains are on record.
