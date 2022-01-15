@@ -71,10 +71,18 @@ export default {
   name: "AppList",
   components: {PieChart, BarChart, App},
   mixins: [ApiMixin],
+  props: ['atsExceptions'],
+  watch: {
+    atsExceptions: function (newVal) {
+       for (const atsException of newVal) {
+          this.mappedAtsExceptions[atsException.id] = atsException;
+        }
+    }
+  },
   data() {
     return {
       initialLoadComplete: false,
-      atsExceptions: {},
+      mappedAtsExceptions: {},
       apps: {},
       currentApp: null,
       sortOrder: {
@@ -129,7 +137,7 @@ export default {
 
         let appAts = [];
         for (const atsAppEx of data.ats_exceptions) {
-          const atsEx = this.atsExceptions[atsAppEx.exception_id];
+          const atsEx = this.mappedAtsExceptions[atsAppEx.exception_id];
 
           appAts.push({
             status: atsEx.state,
@@ -168,13 +176,6 @@ export default {
         return a[field] < b[field];
       });
     },
-    fetchAtsExceptions() {
-      this.fetchData('/api/exceptions/ats').then((data) => {
-        for (const i in data) {
-          this.atsExceptions[data[i].id] = data[i];
-        }
-      });
-    },
     fetchApps() {
       this.fetchData('/api/apps').then((data) => {
         this.totalScore = 0;
@@ -196,7 +197,6 @@ export default {
   created() {
     Chart.register(PieController, ArcElement, Tooltip, BarController, CategoryScale, LinearScale, BarElement);
 
-    this.fetchAtsExceptions();
     this.fetchApps();
 
     let appId = UrlHelper.getParameter('app', -1);

@@ -180,7 +180,7 @@ class AtsException(db.Model, Serializer):
             'id': self.id,
             'key': self.key,
             'state': state_value,
-            'score': self.state,
+            'score': self.score,
             'parent_id': self.parent_id,
             'description': self.description,
             'documentation_url': self.documentation_url

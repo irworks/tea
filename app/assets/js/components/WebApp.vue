@@ -16,8 +16,9 @@
 
 <main>
     <div class="container mt-2">
-      <div v-show="isActive('apps')"><app-list/></div>
+      <div v-show="isActive('apps')"><app-list :ats-exceptions="atsExceptions"/></div>
       <div v-show="isActive('domains')"><domain-list/></div>
+      <div v-show="isActive('ats')"><ats-list :ats-exceptions="atsExceptions"/></div>
     </div>
 </main>
 </template>
@@ -25,13 +26,17 @@
 <script>
 import AppList from "./AppList.vue";
 import DomainList from "./DomainList.vue";
+import AtsList from "./AtsList.vue";
+import ApiMixin from "./ApiMixin.js";
 
 export default {
   name: "WebApp",
-  components: {DomainList, AppList},
+  components: {DomainList, AppList, AtsList},
+  mixins: [ApiMixin],
   data() {
     return {
       runningRequests: 0,
+      atsExceptions: [],
       activeView: 'apps',
       views: {
         apps: {
@@ -41,6 +46,10 @@ export default {
         domains: {
           name: 'Domain Overview',
           key: 'domains'
+        },
+        ats: {
+          name: 'ATS Overview',
+          key: 'ats'
         },
       }
     }
@@ -56,12 +65,18 @@ export default {
     },
     isActive(viewKey) {
       return viewKey === this.activeView;
-    }
+    },
+    fetchAtsExceptions() {
+      this.fetchData('/api/exceptions/ats').then(data => this.atsExceptions = data);
+    },
   },
   computed: {
     isLoadingData() {
       return this.runningRequests > 0;
     },
+  },
+  created() {
+    this.fetchAtsExceptions();
   },
   mounted() {
     // after site load -> try to find view

@@ -89,9 +89,11 @@
 <script>
 import Alert from "./Alert.vue";
 import AppStoreMeta from "./AppStoreMeta.vue";
+import ClassificationMixin from "./ClassificationMixin.js";
 export default {
   name: "App",
   components: {AppStoreMeta, Alert},
+  mixins: [ClassificationMixin],
   props: ['id', 'name', 'bundle_id', 'binary', 'version', 'build', 'sdk', 'min_ios', 'domains', 'ats', 'score', 'genre_name'],
   emits: ['close'],
   data() {
@@ -105,15 +107,6 @@ export default {
     }
   },
   methods: {
-    stateClasses: function (state) {
-      const states = {
-        info: 'bg-info text-dark',
-        insecure: 'bg-danger',
-        warning: 'bg-warning',
-        secure: 'bg-success'
-      };
-      return states[state];
-    },
     paddingClasses: function (atsException) {
       if (atsException.parent) {
         return 'ps-5';
