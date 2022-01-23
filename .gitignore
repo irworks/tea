@@ -4,3 +4,4 @@ app/tlsanalyzer/results.json
 .idea/
 app/node_modules
 /webapp/app/static/
+/app/static/js/
