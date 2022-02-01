@@ -75,6 +75,7 @@ class UrlExtractor:
                         dat = flip.read()
                 # Extract URLs
                 urls = self.url_n_email_extract(dat)
+                logging.debug(f'In {file} found: {urls}')
                 url_list.extend(urls)
 
             # Unique URLs
