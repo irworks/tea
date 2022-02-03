@@ -13,5 +13,5 @@ class AtsExceptionsController:
     Return domains which are used in multiple apps.  
     '''
     def index(self):
-        exceptions = self.db.session.query(AtsException).all()
+        exceptions = self.db.session.query(AtsException).order_by(AtsException.score).all()
         return jsonify(AtsException.serialize_list(exceptions))
