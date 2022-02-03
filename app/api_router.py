@@ -30,6 +30,11 @@ def api_routes(app, db):
         controller = DomainController(app, db)
         return controller.index_paginated(page, request.json)
 
+    @app.route('/api/domains/ignored')
+    def domains_ignored():
+        controller = DomainController(app, db)
+        return controller.ignored()
+
     @app.route('/api/domains/<int:domain_id>')
     def domain_show(domain_id=0):
         controller = DomainController(app, db)

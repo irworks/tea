@@ -79,7 +79,7 @@ export default {
   name: "AppList",
   components: {PieChart, BarChart, App},
   mixins: [ApiMixin],
-  props: ['atsExceptions'],
+  props: ['atsExceptions', 'ignoredDomains'],
   watch: {
     atsExceptions: function (newVal) {
        for (const atsException of newVal) {
@@ -146,9 +146,14 @@ export default {
         let appAts = [];
         for (const atsAppEx of data.ats_exceptions) {
           const atsEx = this.mappedAtsExceptions[atsAppEx.exception_id];
+          let atsState = atsEx.state;
+
+          if (atsAppEx.domain_id != null && this.ignoredDomains.includes(atsAppEx.domain_id)) {
+            atsState = 'info';
+          }
 
           appAts.push({
-            status: atsEx.state,
+            status: atsState,
             key: atsEx.key,
             domain: atsAppEx.domain,
             domain_id: atsAppEx.domain_id,

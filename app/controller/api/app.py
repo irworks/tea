@@ -1,6 +1,7 @@
 from flask import jsonify
 
 from app.models import IosApp, Domain, Url, AppAtsExceptions
+from app.tlsanalyzer.modules.ats.ignored_domains import ignored_domain_ids
 
 
 class AppController:
@@ -8,8 +9,6 @@ class AppController:
     def __init__(self, app, db):
         self.app = app
         self.db = db
-        self.ignored_domains = ['localhost', '127.0.0.1']
-        self.ignored_domains_string = str(self.ignored_domains)[1:-1]
 
     def index(self):
         # select all apps and their corresponding count of ats exceptions
@@ -25,6 +24,7 @@ class AppController:
             outerjoin(AtsException, AtsException.id == AppAtsExceptions.exception_id). \
             group_by(IosApp.id)
         """
+        ignored_domains_string = ','.join([str(i) for i in ignored_domain_ids(self.db)])
 
         query = "SELECT apps.id AS id, apps.name AS name, apps.genre_name AS genre_name," \
                 " apps.bundle_id AS bundle_id, apps.version AS version, apps.build AS build," \
@@ -34,8 +34,7 @@ class AppController:
                 " FROM apps" \
                 " LEFT OUTER JOIN app_ats_exceptions ON app_ats_exceptions.app_id = apps.id" \
                 " LEFT OUTER JOIN ats_exceptions ON ats_exceptions.id = app_ats_exceptions.exception_id" \
-                " LEFT OUTER JOIN domains ON domains.id = app_ats_exceptions.domain_id" \
-                f" WHERE app_ats_exceptions.domain_id IS NULL OR domains.name NOT IN ({self.ignored_domains_string})" \
+                f" WHERE app_ats_exceptions.domain_id IS NULL OR app_ats_exceptions.domain_id NOT IN ({ignored_domains_string})" \
                 " GROUP BY apps.id"
 
         rows = self.db.engine.execute(query)
@@ -62,6 +61,7 @@ class AppController:
     '''
     Return an app model and all related domains, urls and detected ats exceptions. 
     '''
+
     def show(self, app_id):
         app = IosApp.query.filter_by(id=app_id).first()
         domains = app.domains

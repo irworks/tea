@@ -16,7 +16,7 @@
 
 <main>
     <div class="container mt-2">
-      <div v-show="isActive('apps')"><app-list :ats-exceptions="atsExceptions"/></div>
+      <div v-show="isActive('apps')"><app-list :ats-exceptions="atsExceptions" :ignored-domains="ignoredDomains"/></div>
       <div v-show="isActive('domains')"><domain-list/></div>
       <div v-show="isActive('ats')"><ats-list :ats-exceptions="atsExceptions"/></div>
     </div>
@@ -37,6 +37,7 @@ export default {
     return {
       runningRequests: 0,
       atsExceptions: [],
+      ignoredDomains: [],
       activeView: 'apps',
       views: {
         apps: {
@@ -69,6 +70,9 @@ export default {
     fetchAtsExceptions() {
       this.fetchData('/api/exceptions/ats').then(data => this.atsExceptions = data);
     },
+    fetchIgnoredDomains() {
+      this.fetchData('/api/domains/ignored').then(data => this.ignoredDomains = data);
+    },
   },
   computed: {
     isLoadingData() {
@@ -77,6 +81,7 @@ export default {
   },
   created() {
     this.fetchAtsExceptions();
+    this.fetchIgnoredDomains();
   },
   mounted() {
     // after site load -> try to find view
