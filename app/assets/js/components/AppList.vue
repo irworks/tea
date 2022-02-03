@@ -147,9 +147,11 @@ export default {
         for (const atsAppEx of data.ats_exceptions) {
           const atsEx = this.mappedAtsExceptions[atsAppEx.exception_id];
           let atsState = atsEx.state;
+          let score = atsEx.score;
 
           if (atsAppEx.domain_id != null && this.ignoredDomains.includes(atsAppEx.domain_id)) {
             atsState = 'info';
+            score = 0;
           }
 
           appAts.push({
@@ -159,7 +161,8 @@ export default {
             domain_id: atsAppEx.domain_id,
             parent: atsEx.parent_id,
             description: atsEx.description,
-            documentation_url: atsEx.documentation_url
+            documentation_url: atsEx.documentation_url,
+            score: score
           });
         }
 

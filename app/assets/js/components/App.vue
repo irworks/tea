@@ -44,6 +44,7 @@
             <th scope="col">State</th>
             <th scope="col">Issue</th>
             <th scope="col">Domain</th>
+            <th scope="col">Score</th>
             <th scope="col">Details</th>
           </tr>
           </thead>
@@ -56,6 +57,9 @@
             <td :class="paddingClasses(atsException)">{{ atsException.key }}</td>
             <td :class="paddingClasses(atsException)">
               <a :href="'/domains?domain=' + atsException.domain_id" target="_blank">{{ atsException.domain }}</a>
+            </td>
+            <td :class="paddingClasses(atsException)">
+              {{ atsException.score }}
             </td>
             <td :class="paddingClasses(atsException)">
               <small>
