@@ -8,6 +8,8 @@ class AppController:
     def __init__(self, app, db):
         self.app = app
         self.db = db
+        self.ignored_domains = ['localhost', '127.0.0.1']
+        self.ignored_domains_string = str(self.ignored_domains)[1:-1]
 
     def index(self):
         # select all apps and their corresponding count of ats exceptions
@@ -32,6 +34,8 @@ class AppController:
                 " FROM apps" \
                 " LEFT OUTER JOIN app_ats_exceptions ON app_ats_exceptions.app_id = apps.id" \
                 " LEFT OUTER JOIN ats_exceptions ON ats_exceptions.id = app_ats_exceptions.exception_id" \
+                " LEFT OUTER JOIN domains ON domains.id = app_ats_exceptions.domain_id" \
+                f" WHERE app_ats_exceptions.domain_id IS NULL OR domains.name NOT IN ({self.ignored_domains_string})" \
                 " GROUP BY apps.id"
 
         rows = self.db.engine.execute(query)
