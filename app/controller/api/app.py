@@ -24,13 +24,14 @@ class AppController:
             outerjoin(AtsException, AtsException.id == AppAtsExceptions.exception_id). \
             group_by(IosApp.id)
         """
+        base_score = 2000
         ignored_domains_string = ','.join([str(i) for i in ignored_domain_ids(self.db)])
 
         query = "SELECT apps.id AS id, apps.name AS name, apps.genre_name AS genre_name," \
                 " apps.bundle_id AS bundle_id, apps.version AS version, apps.build AS build," \
                 " apps.sdk AS sdk, apps.min_ios AS min_ios," \
                 " count(app_ats_exceptions.app_id) AS ats," \
-                " sum(ats_exceptions.score) AS score" \
+                f" sum(ats_exceptions.score) + {base_score} AS score" \
                 " FROM apps" \
                 " LEFT OUTER JOIN app_ats_exceptions ON app_ats_exceptions.app_id = apps.id" \
                 " LEFT OUTER JOIN ats_exceptions ON ats_exceptions.id = app_ats_exceptions.exception_id" \
@@ -53,7 +54,7 @@ class AppController:
 
             # convert RowMapping to an actual python dict
             app = dict(app)
-            app['score'] = app['score'] or 0
+            app['score'] = app['score'] or base_score
             result['apps'].append(app)
 
         return jsonify(result)

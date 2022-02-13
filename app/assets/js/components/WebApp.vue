@@ -1,6 +1,7 @@
 <template>
   <nav class="ps-2 navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">tlsanalyzer</a>
+    <a class="navbar-brand" href="/"><img class="app-logo" src="/static/img/TEA-Logo-small.png" alt="TEA (TLS Exception Analyzer) Logo">
+      <span class="app-name ms-2"><b>T</b>LS <b>E</b>xception <b>A</b>nalyzer</span></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
