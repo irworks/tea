@@ -23,11 +23,17 @@
       This tool analyzes iOS (if applicable also iPadOS and tvOS compatible) apps according to their <a
       href="https://developer.apple.com/documentation/security/preventing_insecure_network_connections" target="_blank">App
       Transport Security (ATS)</a> exceptions.<br>
-      The apps are obtained from the official App Store based on the list of most popular apps in each category.
+      The apps are obtained from the official German App Store based on the list of most popular apps in each category.
     </p>
     <p>
       Analyzed <b>{{ count }}</b> apps. Of those <b>{{ countAppsWithAts }}</b> apps have ATS exceptions.
       Average security score is <b>{{ averageScore }}</b>. Total score is <b>{{ totalScore }}</b>.
+    </p>
+
+    <h4>Scoring</h4>
+    <p>
+      Apps start with a base score of <b>2000</b> points, negative points are given for settings which weaken the default;
+      Positive points for hardening the systems' defaults.
     </p>
     <hr>
   </div>
