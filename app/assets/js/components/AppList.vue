@@ -91,11 +91,16 @@ export default {
        for (const atsException of newVal) {
           this.mappedAtsExceptions[atsException.id] = atsException;
         }
-    }
+       this.loadCount++;
+    },
+    ignoredDomains: function (newVal) {
+       this.loadCount++;
+    },
   },
   data() {
     return {
       initialLoadComplete: false,
+      loadCount: 0,
       mappedAtsExceptions: {},
       apps: {},
       currentApp: null,
@@ -105,7 +110,7 @@ export default {
       },
       count: 0,
       countAppsWithAts: 0,
-      totalScore: 0
+      totalScore: 0,
     }
   },
   computed: {
@@ -147,6 +152,11 @@ export default {
       UrlHelper.setParameter('app', app.id);
     },
     assignAppModel(appModel, data) {
+      if (this.loadCount < 2) {
+        setTimeout(() => this.assignAppModel(appModel, data), 250);
+        return;
+      }
+
       appModel.domains = data.domains;
 
         let appAts = [];
