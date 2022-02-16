@@ -6,6 +6,8 @@
 
 Analyze iOS apps regarding [App Transport Security (ATS)](https://developer.apple.com/documentation/security/preventing_insecure_network_connections) exception and extract urls and domains.   
 
+![TEA Dashboard](/screenshots/dashboard.png?raw=true "TEA Dashboard")
+
 ### Usage
 Prepare a folder containing `.ipa` files for analysis. To extract multiple apps at once you can use [ipdumper](https://gitlab.com/marzzzello/ipa-dumper).
 
